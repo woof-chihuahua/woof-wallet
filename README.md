@@ -1,4 +1,4 @@
-# wallet-huahua-vuejs
+# Woof-Wallet
 
 This template should help get you started developing with Vue 3 in Vite.
 
