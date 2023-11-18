@@ -1,5 +1,7 @@
 # Woof-Wallet
 
+[![Deploy static content to Pages](https://github.com/atmoner/woof-wallet/actions/workflows/woof-deploy.yml/badge.svg)](https://github.com/atmoner/woof-wallet/actions/workflows/woof-deploy.yml) 
+
 This template should help get you started developing with Vue 3 in Vite.
 
 ## Recommended IDE Setup
