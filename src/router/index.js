@@ -12,6 +12,7 @@ const router = createRouter({
       path: '/staking',
       name: 'staking',
       component: () => import('../views/Staking.vue')
+      
     },
     {
       path: '/proposals',
@@ -27,6 +28,11 @@ const router = createRouter({
       path: '/all-validators',
       name: 'allValidators',
       component: () => import('../views/AllValidatorsView.vue')
+    },
+    { 
+      path: '/:pathMatch(.*)*', 
+      name: 'NotFound', 
+      component: () => import('../views/HomeView.vue')
     }
   ]
 })

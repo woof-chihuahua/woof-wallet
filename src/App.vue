@@ -50,7 +50,7 @@
           </v-menu> 
         </v-btn>
 
-        <v-btn
+        <!-- <v-btn
           v-if="store.isLogged"
           class="me-2"
           :color="cosmosConfig[store.chain].color"
@@ -59,6 +59,25 @@
           to="/proposals"
         >
           Proposals
+        </v-btn> -->
+        <v-btn
+          v-if="store.isLogged"
+          class="me-2"
+          :color="cosmosConfig[store.chain].color"
+          height="40"
+          variant="flat"  
+        >  
+          Proposals
+          <v-menu activator="parent">
+            <v-list>
+              <v-list-item to="/proposals">
+                <v-list-item-title>All Proposals</v-list-item-title>
+              </v-list-item>
+              <v-list-item to="/create-prop">
+                <v-list-item-title>Create proposal</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu> 
         </v-btn>
 
         <v-btn
