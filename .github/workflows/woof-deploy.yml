@@ -43,6 +43,10 @@ jobs:
         uses: borales/actions-yarn@v4
         with:
           cmd: build # will run `yarn build` command
+      - name: Fix woof-404
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: fix-404 # will run `yarn build` command
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
