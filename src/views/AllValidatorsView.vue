@@ -83,7 +83,9 @@
                   <actionsModals 
                     type="Delegate" 
                     color="#995803"
-                    :spendable-balances="store.totalRewards"
+                    :spendable-balances="store.spendableBalances"
+                    :toValidatorName="item.raw.description.moniker"
+                    :toValidatorAddress="item.raw.operator_address"
                   />
                 </div>
               </v-card>

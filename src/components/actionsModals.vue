@@ -889,7 +889,7 @@
         </template>
 
         <v-toolbar-title class="text-h6">
-          Delegate
+          Delegate to {{ toValidatorName }}
         </v-toolbar-title>        
 
         <template #append>
@@ -903,10 +903,26 @@
         <v-form
           v-if="step1"
           ref="formSend"
-          v-model="formSend"
-          align="center"
+          v-model="formSend" 
         >
-          <h2>Soon!</h2>
+            <v-text-field
+              v-model="sendAmount"
+              :rules="[rules.required, rules.checkAmount]"
+              class="mb-2"
+              label="Amount to delegate"
+              placeholder="Enter amount"
+              variant="outlined"
+            >
+            <template #append-inner>
+              <v-chip
+                label
+                small
+                @click="getMax"
+              >
+                Max
+              </v-chip>
+            </template>
+          </v-text-field>
         </v-form>
         <div v-if="step2">
           <v-row>
@@ -977,15 +993,15 @@
           {{ txResult.transactionHash }}
         </div>
       </v-card-text>
-      <!-- <v-btn
+      <v-btn
         v-if="step1"
         class="text-none ml-6 mr-6 mb-4"
-        :disabled="voteFinal === ''"
+        :disabled="!formSend"
         :color="cosmosConfig[store.chain].color"
         size="large"
-        @click="calculateVoteFee()"
+        @click="calculateDelegateFee()"
       >
-        Vote {{ voteFinal }}
+        Calculate fee
       </v-btn>
       <v-btn
         v-if="step2"
@@ -993,11 +1009,10 @@
         :disabled="!formSend"
         :color="cosmosConfig[store.chain].color"
         size="large"
-        @click="VoteNow()"
+        @click="delegateNow()"
       >
-        Vote now
-      </v-btn> 
-       -->
+        Delegate now
+      </v-btn>  
     </v-card>
   </v-dialog>  
 </template>
@@ -1072,6 +1087,16 @@ export default {
       required: false
     },
     propId: {
+      type: String,
+      default: '',
+      required: false
+    },
+    toValidatorName: {
+      type: String,
+      default: '',
+      required: false
+    },
+    toValidatorAddress: {
       type: String,
       default: '',
       required: false
@@ -1394,6 +1419,45 @@ export default {
         );
         this.gasFee = { fee: (usedFee.amount[0].amount / 1000000), gas: usedFee.gas }; 
     },
+    async calculateDelegateFee () {
+      this.step1 = false;
+      this.step2 = true;
+      let signer = await selectSigner(this.store.chain)
+
+      const foundMsgType = defaultRegistryTypes.find(
+        (element) =>
+          element[0] ===
+            "/cosmos.staking.v1beta1.MsgDelegate"
+      );      
+
+      
+        
+        const amount = coin(this.sendAmount * 1000000, cosmosConfig[this.store.chain].coinLookup.chainDenom);
+        const finalMsg = {
+        typeUrl: foundMsgType[0],
+          value: foundMsgType[1].fromPartial({
+            delegatorAddress: signer.accounts[0].address,
+            validatorAddress: this.toValidatorAddress,
+            amount: amount 
+          }),
+        } 
+        
+        // Fee/Gas
+        const gasEstimation = await signer.client.simulate(
+          signer.accounts[0].address,
+          [finalMsg],
+          'Vote'
+        );
+        const usedFee = calculateFee(
+          Math.round(gasEstimation * cosmosConfig[this.store.chain].feeMultiplier),
+          GasPrice.fromString(
+            cosmosConfig[this.store.chain].gasPrice +
+              cosmosConfig[this.store.chain].coinLookup.chainDenom
+          )
+        );
+        this.gasFee = { fee: (usedFee.amount[0].amount / 1000000), gas: usedFee.gas };
+    },
+    
     // Actions
     async sendNow() {
       this.step2 = false;
@@ -1640,6 +1704,67 @@ export default {
           const result = await signer.client.signAndBroadcast(signer.accounts[0].address, [finalMsg], finalFee, '')
           assertIsDeliverTxSuccess(result)
           console.log(result)
+          this.txResult = result
+          this.step3 = false;
+          this.step4 = true;
+        } catch (error) {
+          console.error(error);
+          this.step3 = false;
+          this.step2 = true;
+        }
+      }
+
+    },
+    async delegateNow() { 
+      this.step2 = false;
+      this.step3 = true;
+
+      if (this.formSend) {
+ 
+
+        let signer = await selectSigner(this.store.chain)
+        const foundMsgType = defaultRegistryTypes.find(
+        (element) =>
+          element[0] ===
+            "/cosmos.staking.v1beta1.MsgDelegate"
+      );      
+
+      const amount = coin(this.sendAmount * 1000000, cosmosConfig[this.store.chain].coinLookup.chainDenom);
+        const finalMsg = {
+        typeUrl: foundMsgType[0],
+          value: foundMsgType[1].fromPartial({
+            delegatorAddress: signer.accounts[0].address,
+            validatorAddress: this.toValidatorAddress,
+            amount: amount 
+          }),
+        } 
+        
+        // Fee/Gas
+        const gasEstimation = await signer.client.simulate(
+          signer.accounts[0].address,
+          [finalMsg],
+          'Vote'
+        );
+        const usedFee = calculateFee(
+          Math.round(gasEstimation * cosmosConfig[this.store.chain].feeMultiplier),
+          GasPrice.fromString(
+            cosmosConfig[this.store.chain].gasPrice +
+              cosmosConfig[this.store.chain].coinLookup.chainDenom
+          )
+        );
+        this.gasFee = { fee: (usedFee.amount[0].amount / 1000000), gas: usedFee.gas };
+
+          const feeAmount = coins(usedFee.amount[0].amount, cosmosConfig[this.store.chain].coinLookup.chainDenom);
+          let finalFee = {
+            amount: feeAmount,
+            gas: usedFee.gas,
+            granter: this.store.setFeePayer,
+          }
+        try {
+          const result = await signer.client.signAndBroadcast(signer.accounts[0].address, [finalMsg], finalFee, '')
+          assertIsDeliverTxSuccess(result)
+          console.log(result)
+          //this.store.getDelegations()
           this.txResult = result
           this.step3 = false;
           this.step4 = true;
