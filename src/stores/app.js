@@ -162,6 +162,15 @@ export const useAppStore = defineStore('data', {
       }
       this.formFeeGranter = finalGranter
     },
+    async getAllValidators() {
+      const allValidators = await axios(
+        cosmosConfig[this.chain].apiURL + "/cosmos/staking/v1beta1/validators?pagination.limit=250&status=BOND_STATUS_BONDED"
+      );
+      for (let i = 0; i < allValidators.data.validators.length; i++) {
+        allValidators.data.validators[i].moniker = allValidators.data.validators[i].description.moniker;
+      }
+      this.allValidators = allValidators.data.validators
+    },
     async getWalletAmount() {
       let totalToken = 
         Number(this.spendableBalances) + 
@@ -219,10 +228,12 @@ export const useAppStore = defineStore('data', {
       const allValidators = await axios(
         cosmosConfig[this.chain].apiURL + "/cosmos/staking/v1beta1/validators?pagination.limit=250"
       );
-      this.allValidators = allValidators.data.validators
+      
       await allValidators.data.validators.forEach(async (item) => {
-        totalBonded2 += Number(item.tokens);
+        totalBonded2 += Number(item.tokens); 
       });
+
+      // this.allValidators = allValidators.data.validators
 
 
       let finalChainSelected = this.chain

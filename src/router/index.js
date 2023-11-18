@@ -22,6 +22,11 @@ const router = createRouter({
       path: '/stats',
       name: 'stats',
       component: () => import('../views/StatsView.vue')
+    },
+    {
+      path: '/all-validators',
+      name: 'allValidators',
+      component: () => import('../views/AllValidatorsView.vue')
     }
   ]
 })

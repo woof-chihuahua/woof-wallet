@@ -35,10 +35,19 @@
           class="me-2"
           :color="cosmosConfig[store.chain].color"
           height="40"
-          variant="flat" 
-          to="/staking"
-        >
-          My Stakings
+          variant="flat"  
+        >  
+          Stakings
+          <v-menu activator="parent">
+            <v-list>
+              <v-list-item to="/all-validators">
+                <v-list-item-title>All validators</v-list-item-title>
+              </v-list-item>
+              <v-list-item to="/staking">
+                <v-list-item-title>My delegations</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu> 
         </v-btn>
 
         <v-btn
@@ -96,12 +105,14 @@
           justify="center"
           no-gutters
         >
+          v.1.0.1
           <v-icon
             color="#E6A147"
-            class="mr-4"
+            class="ml-4 mr-4"
           >
             mdi-dog
           </v-icon> 
+          Beta
         <!-- Woof corporation -->
         </v-row>
       </v-footer>
@@ -168,6 +179,12 @@ export default {
     },
     data: () => ({
       cosmosConfig: cosmosConfig,
+      items: [
+        { title: 'Click Me' },
+        { title: 'Click Me' },
+        { title: 'Click Me' },
+        { title: 'Click Me 2' },
+      ], 
     }),
     mounted() {
       if(!this.store.isLogged) {       
@@ -185,6 +202,7 @@ export default {
         await this.store.getFeeGrantModule()
         await this.store.getDelegations()
         await this.store.getGovModule()
+        await this.store.getAllValidators()
  
       })
       setInterval(async ()=> {
@@ -204,6 +222,8 @@ export default {
         await this.store.getFeeGrantModule()
         await this.store.getDelegations()
         await this.store.getGovModule()
+        await this.store.getAllValidators()
+ 
 
         await this.store.setLoaded()
   
@@ -233,4 +253,5 @@ export default {
 .outline-border:hover:after {
   transform: scaleX(1);
 }
+
 </style>

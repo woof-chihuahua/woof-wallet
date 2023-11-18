@@ -63,7 +63,15 @@
   >
     {{ typeAction }}
   </v-chip>
- 
+  <v-chip
+    v-if="typeAction === 'Delegate'"
+    class="ma-2"
+    label
+    color="orange"
+    @click="openDelegate"
+  >
+    {{ typeAction }}
+  </v-chip> 
 
   <v-dialog
     v-model="dialog" 
@@ -858,7 +866,140 @@
       </v-btn> 
        -->
     </v-card>
-  </v-dialog>    
+  </v-dialog>   
+  <v-dialog
+    v-model="dialogDelegate" 
+    transition="dialog-bottom-transition"
+    width="600"
+  >
+    <v-card>
+      <v-toolbar
+        :color="cosmosConfig[store.chain].color"
+        theme="dark"
+        class="mb-6"
+      >
+        <template #prepend>
+          <v-avatar>
+            <v-img
+              max-width="32"
+              max-height="32"
+              :src="cosmosConfig[store.chain].coinLookup.icon" 
+            />
+          </v-avatar>
+        </template>
+
+        <v-toolbar-title class="text-h6">
+          Delegate
+        </v-toolbar-title>        
+
+        <template #append>
+          <v-btn
+            icon="mdi-close"
+            @click="dialogDelegate = false"
+          />
+        </template>
+      </v-toolbar>
+      <v-card-text>
+        <v-form
+          v-if="step1"
+          ref="formSend"
+          v-model="formSend"
+          align="center"
+        >
+          <h2>Soon!</h2>
+        </v-form>
+        <div v-if="step2">
+          <v-row>
+            <v-col>
+              <v-sheet
+                class="pa-2"
+                border
+              >
+                <v-row>
+                  <v-col>
+                    <v-sheet class="pa-2 ma-2">
+                      Fee
+                    </v-sheet>
+                  </v-col>
+                  <v-col>
+                    <v-sheet class="pa-2 ma-2">
+                      ≈ {{ gasFee.fee / 2 }}
+                    </v-sheet>
+                  </v-col>
+                </v-row>
+              </v-sheet>
+            </v-col>
+            <v-col>
+              <v-sheet
+                class="pa-2"
+                border
+              >
+                <v-row>
+                  <v-col>
+                    <v-sheet class="pa-2 ma-2">
+                      Gas
+                    </v-sheet>
+                  </v-col>
+                  <v-col>
+                    <v-sheet class="pa-2 ma-2">
+                      {{ gasFee.gas }}
+                    </v-sheet>
+                  </v-col>
+                </v-row>
+              </v-sheet>
+            </v-col>
+          </v-row>
+          <FeePayer v-if="store.myFeeAllowances.length > 0" />
+        </div>
+        <div
+          v-if="step3"
+          class="ma-8 text-center"
+        >
+          <v-progress-circular
+            :size="100"
+            :width="5"
+            :color="cosmosConfig[store.chain].color"
+            indeterminate
+            justify="center"
+          />
+        </div>
+        <div
+          v-if="step4"
+          class="ma-8 text-center"
+        >
+          <v-icon
+            size="150"
+            color="green darken-2"
+          >
+            mdi-check-circle-outline
+          </v-icon>
+          <br><br>
+          {{ txResult.transactionHash }}
+        </div>
+      </v-card-text>
+      <!-- <v-btn
+        v-if="step1"
+        class="text-none ml-6 mr-6 mb-4"
+        :disabled="voteFinal === ''"
+        :color="cosmosConfig[store.chain].color"
+        size="large"
+        @click="calculateVoteFee()"
+      >
+        Vote {{ voteFinal }}
+      </v-btn>
+      <v-btn
+        v-if="step2"
+        class="text-none ml-6 mr-6 mb-4 mt-6"
+        :disabled="!formSend"
+        :color="cosmosConfig[store.chain].color"
+        size="large"
+        @click="VoteNow()"
+      >
+        Vote now
+      </v-btn> 
+       -->
+    </v-card>
+  </v-dialog>  
 </template>
 <script>
 import {
@@ -951,6 +1092,7 @@ export default {
     dialogRedel: false,
     dialogVote: false,
     dialogGetReward: false,
+    dialogDelegate: false,
     step1: true,
     step2: false,
     step3: false,
@@ -1070,6 +1212,14 @@ export default {
     },
     openGetReward() { 
       this.dialogGetReward = true  
+      this.gasFee = 0
+      this.step1 = true;
+      this.step2 = false;
+      this.step3 = false;
+      this.step4 = false;
+    },
+    openDelegate() { 
+      this.dialogDelegate = true 
       this.gasFee = 0
       this.step1 = true;
       this.step2 = false;
