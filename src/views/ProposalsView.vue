@@ -112,8 +112,7 @@
                 <tbody>
                   <tr align="right">
                     <th>Date:</th>
-
-                    <td>{{ item.raw.submitTime.seconds.low }} </td>
+                    <td>{{ moment(item.raw.submitTime.seconds.low, 'X').format("MMMM Do YYYY, h:mm:ss") }} </td> 
                   </tr>
 
                   <tr align="right">

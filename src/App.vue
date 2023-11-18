@@ -105,7 +105,7 @@
           justify="center"
           no-gutters
         >
-          v.1.0.1
+          v.1.0.2
           <v-icon
             color="#E6A147"
             class="ml-4 mr-4"
