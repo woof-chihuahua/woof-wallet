@@ -12,13 +12,6 @@
       item-value="op_address"
       items-per-page="100"
     >
-      <template #header="">
-        <h1 class="text-h4 font-weight-bold d-flex justify-space-between mb-4 align-center">
-          <div class="text-truncate">
-            My stakings
-          </div> 
-        </h1>
-      </template>
       <template #default="{ items, isExpanded, toggleExpand }">
         <!--  {{ items  }}  -->
         <v-row>
