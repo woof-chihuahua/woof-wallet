@@ -9,6 +9,7 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
+    "@cosmjs/stargate": "^0.31.3",
     "@cosmjs/tendermint-rpc": "^0.31.3",
     "@mdi/font": "^7.3.67",
     "chart.js": "^4.4.0",
