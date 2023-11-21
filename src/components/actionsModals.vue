@@ -76,7 +76,7 @@
   <v-dialog
     v-model="dialog" 
     transition="dialog-bottom-transition"
-    width="600"
+    :width="width"
   >
     <v-card>
       <v-toolbar
@@ -245,7 +245,7 @@
   <v-dialog
     v-model="dialogUnRedel" 
     transition="dialog-bottom-transition"
-    width="600"
+    :width="width"
   >
     <v-card>
       <v-toolbar
@@ -396,7 +396,7 @@
   <v-dialog
     v-model="dialogRedel" 
     transition="dialog-bottom-transition"
-    width="600"
+    :width="width"
   >
     <v-card>
       <v-toolbar
@@ -570,7 +570,7 @@
   <v-dialog
     v-model="dialogVote" 
     transition="dialog-bottom-transition"
-    width="600"
+    :width="width"
   >
     <v-card>
       <v-toolbar
@@ -737,7 +737,7 @@
   <v-dialog
     v-model="dialogGetReward" 
     transition="dialog-bottom-transition"
-    width="600"
+    :width="width"
   >
     <v-card>
       <v-toolbar
@@ -870,7 +870,7 @@
   <v-dialog
     v-model="dialogDelegate" 
     transition="dialog-bottom-transition"
-    width="600"
+    :width="width"
   >
     <v-card>
       <v-toolbar
@@ -905,14 +905,14 @@
           ref="formSend"
           v-model="formSend" 
         >
-            <v-text-field
-              v-model="sendAmount"
-              :rules="[rules.required, rules.checkAmount]"
-              class="mb-2"
-              label="Amount to delegate"
-              placeholder="Enter amount"
-              variant="outlined"
-            >
+          <v-text-field
+            v-model="sendAmount"
+            :rules="[rules.required, rules.checkAmount]"
+            class="mb-2"
+            label="Amount to delegate"
+            placeholder="Enter amount"
+            variant="outlined"
+          >
             <template #append-inner>
               <v-chip
                 label
@@ -1112,6 +1112,7 @@ export default {
     typeAction: prop.type,
     colorProp: prop.color,
     cosmosConfig: cosmosConfig,
+    width: 700,
     dialog: false,
     dialogUnRedel: false,
     dialogRedel: false,
@@ -1446,7 +1447,7 @@ export default {
         const gasEstimation = await signer.client.simulate(
           signer.accounts[0].address,
           [finalMsg],
-          'Vote'
+          ''
         );
         const usedFee = calculateFee(
           Math.round(gasEstimation * cosmosConfig[this.store.chain].feeMultiplier),
@@ -1472,7 +1473,7 @@ export default {
               "/cosmos.bank.v1beta1.MsgSend"
           );
 
-          const amount = coins(this.sendAmount * 1000000, cosmosConfig[this.store.chain].coinLookup.chainDenom);
+          const amount = coins((this.sendAmount ) * 1000000, cosmosConfig[this.store.chain].coinLookup.chainDenom);
           const finalMsg = {
           typeUrl: foundMsgType[0],
             value: foundMsgType[1].fromPartial({
@@ -1683,7 +1684,7 @@ export default {
         const gasEstimation = await signer.client.simulate(
           signer.accounts[0].address,
           [finalMsg],
-          'Vote'
+          ''
         );
         const usedFee = calculateFee(
           Math.round(gasEstimation * cosmosConfig[this.store.chain].feeMultiplier),
@@ -1743,7 +1744,7 @@ export default {
         const gasEstimation = await signer.client.simulate(
           signer.accounts[0].address,
           [finalMsg],
-          'Vote'
+          ''
         );
         const usedFee = calculateFee(
           Math.round(gasEstimation * cosmosConfig[this.store.chain].feeMultiplier),

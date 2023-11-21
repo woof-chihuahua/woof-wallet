@@ -84,8 +84,8 @@
                     type="Delegate" 
                     color="#995803"
                     :spendable-balances="store.spendableBalances"
-                    :toValidatorName="item.raw.description.moniker"
-                    :toValidatorAddress="item.raw.operator_address"
+                    :to-validator-name="item.raw.description.moniker"
+                    :to-validator-address="item.raw.operator_address"
                   />
                 </div>
               </v-card>

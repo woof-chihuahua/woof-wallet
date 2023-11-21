@@ -74,7 +74,15 @@
                 <v-list-item-title>All Proposals</v-list-item-title>
               </v-list-item>
               <v-list-item to="/create-prop">
-                <v-list-item-title>Create proposal</v-list-item-title>
+                <v-list-item-title>
+                  Create proposal
+                  <v-chip
+                    class="ma-2"
+                    label
+                  >
+                    Alpha
+                  </v-chip>
+                </v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu> 
@@ -124,7 +132,7 @@
           justify="center"
           no-gutters
         >
-          v.1.0.3
+          v.1.0.4
           <v-icon
             color="#E6A147"
             class="ml-4 mr-4"

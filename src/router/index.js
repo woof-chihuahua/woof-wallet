@@ -29,6 +29,11 @@ const router = createRouter({
       name: 'allValidators',
       component: () => import('../views/AllValidatorsView.vue')
     },
+    {
+      path: '/create-prop',
+      name: 'createProp',
+      component: () => import('../views/CreatePropView.vue')
+    },    
     { 
       path: '/:pathMatch(.*)*', 
       name: 'NotFound', 
