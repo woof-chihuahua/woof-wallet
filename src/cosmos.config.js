@@ -17,8 +17,8 @@ export default {
       banner: "https://raw.githubusercontent.com/BitCannaGlobal/cosmospay-woocommerce/main/public/img/Chihuahua.png",
     },
     coingeckoId: 'chihuahua-token',
-    feeMultiplier: 1.3,
-    gasPrice: 3000,
+    feeMultiplier: 3,
+    gasPrice: 4000,
     color: '#E7A246',
     colorChart: ["#efc283", "#F0A841", "#c67f21", "#995803"],
     modules: {

@@ -67,9 +67,9 @@ export const useAppStore = defineStore('data', {
     }, 
     async getPrice() {
       const finalPrice = await axios(
-        "https://api-osmosis.imperator.co/tokens/v2/price/huahua"  
+        "https://api.coingecko.com/api/v3/simple/price?ids=chihuahua-token&vs_currencies=usd"  
       ); 
-      this.tokenPrice = finalPrice.data.price.toFixed(6)
+      this.tokenPrice = finalPrice.data['chihuahua-token'].usd.toFixed(6)
     },
     async getBankModule() {
       const queryBank = new bank.QueryClientImpl(this.rpcClient); 

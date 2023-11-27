@@ -41,7 +41,7 @@
             cols="12"
             sm="6"
             xl="3"
-          >
+          > 
             <v-sheet
               border
               rounded="lg"
@@ -108,11 +108,11 @@
               <v-table
                 density="compact"
                 class="text-caption"
-              >
+              > 
                 <tbody>
                   <tr align="right">
-                    <th>Date:</th>
-                    <td>{{ moment(item.raw.submitTime.seconds.low, 'X').format("MMMM Do YYYY, h:mm:ss") }} </td> 
+                    <th>Date: </th>
+                    <td>{{ moment(item.raw.submitTime.seconds, 'X').format("MMMM Do YYYY, h:mm:ss") }} </td> 
                   </tr>
 
                   <tr align="right">

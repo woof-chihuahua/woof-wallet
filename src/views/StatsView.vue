@@ -66,9 +66,15 @@
             icon="mdi-information-outline"
             class="mr-2"
           />           
-          Another data
+          Price history (30 days)
         </h3>
-        <v-divider /> 
+        <trend
+          :data="tokenPrice"
+          :gradient="cosmosConfig[store.chain].colorChart"
+          auto-draw
+          smooth
+        >
+        </trend> 
       </v-sheet>
     </v-col>
   </v-row>
@@ -76,8 +82,10 @@
 
 <script>
 import millify from "millify";
+import axios from "axios";
 import { useAppStore } from '@/stores/app'
 import cosmosConfig from '@/cosmos.config'
+
 
 export default {
     name: 'App', 
@@ -89,8 +97,20 @@ export default {
     },
     data: () => ({
       cosmosConfig: cosmosConfig,
-      millify: millify
+      millify: millify,
+      tokenPrice: []
     }),
+    async mounted() {
+      const finalPrices = await axios(
+        "https://api.coingecko.com/api/v3/coins/chihuahua-token/market_chart?vs_currency=usd&days=30"  
+      ); 
+      //let tokenPrice = []
+      for (let keyPrice in finalPrices.data.prices) {
+        this.tokenPrice.push(finalPrices.data.prices[keyPrice][1] * 100)
+        console.log(finalPrices.data.prices[keyPrice][1])
+      }
+      console.log(finalPrices.data.prices);
+    }
 
 }
 </script>

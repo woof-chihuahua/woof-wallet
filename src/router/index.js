@@ -33,7 +33,17 @@ const router = createRouter({
       path: '/create-prop',
       name: 'createProp',
       component: () => import('../views/CreatePropView.vue')
-    },    
+    },
+    {
+      path: '/alliance',
+      name: 'Alliance',
+      component: () => import('../views/AllianceView.vue')
+    },
+    {
+      path: '/swap',
+      name: 'Swap',
+      component: () => import('../views/SwapView.vue')
+    },
     { 
       path: '/:pathMatch(.*)*', 
       name: 'NotFound', 

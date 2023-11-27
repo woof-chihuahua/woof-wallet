@@ -772,8 +772,18 @@
           ref="formSend"
           v-model="formSend"
           align="center"
-        >
-          <h2>Soon!</h2>
+        > 
+          <v-sheet         
+            border
+            rounded="lg"
+            min-height="50"
+            class="pt-2"
+          >
+          {{ store.totalRewards }}
+          <strong 
+                  :style="'color:' + cosmosConfig[store.chain].color"
+                > {{ cosmosConfig[store.chain].coinLookup.viewDenom }}</strong>
+          </v-sheet>
         </v-form>
         <div v-if="step2">
           <v-row>
@@ -844,27 +854,25 @@
           {{ txResult.transactionHash }}
         </div>
       </v-card-text>
-      <!-- <v-btn
+      <v-btn
         v-if="step1"
-        class="text-none ml-6 mr-6 mb-4"
-        :disabled="voteFinal === ''"
+        class="text-none ml-6 mr-6 mb-4" 
         :color="cosmosConfig[store.chain].color"
         size="large"
-        @click="calculateVoteFee()"
+        @click="calculateGetRewards()"
       >
-        Vote {{ voteFinal }}
+        Calcul fee
       </v-btn>
       <v-btn
         v-if="step2"
-        class="text-none ml-6 mr-6 mb-4 mt-6"
-        :disabled="!formSend"
+        class="text-none ml-6 mr-6 mb-4 mt-6" 
         :color="cosmosConfig[store.chain].color"
         size="large"
-        @click="VoteNow()"
+        @click="getRewards()"
       >
-        Vote now
+        Get my rewards
       </v-btn> 
-       -->
+       
     </v-card>
   </v-dialog>   
   <v-dialog
@@ -1087,7 +1095,7 @@ export default {
       required: false
     },
     propId: {
-      type: String,
+      type: Number,
       default: '',
       required: false
     },
@@ -1398,12 +1406,12 @@ export default {
         const finalMsg = {
         typeUrl: foundMsgType[0],
           value: foundMsgType[1].fromPartial({
-            proposalId: this.propId,
+            proposalId: Number(this.propId),
             voter: signer.accounts[0].address,
             option: finalVote,
             metadata: this.voteReason,
           }),
-        }
+        } 
     
         // Fee/Gas
         const gasEstimation = await signer.client.simulate(
@@ -1458,7 +1466,43 @@ export default {
         );
         this.gasFee = { fee: (usedFee.amount[0].amount / 1000000), gas: usedFee.gas };
     },
-    
+    async calculateGetRewards() {
+      this.step1 = false;
+      this.step2 = true; 
+      let signer = await selectSigner(this.store.chain)
+
+        const foundMsgType = defaultRegistryTypes.find(
+          (element) =>
+            element[0] ===
+            "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"
+        );
+        const copieDelegator = [];
+        this.store.allMyDelegations.forEach(function (item) {
+          copieDelegator.push({
+            typeUrl: foundMsgType[0],
+            value: foundMsgType[1].fromPartial({
+              delegatorAddress: signer.accounts[0].address,
+              validatorAddress: item.op_address,
+            }),
+          });
+        }); 
+        
+        // Fee/Gas
+        const gasEstimation = await signer.client.simulate(
+          signer.accounts[0].address,
+          copieDelegator,
+          ''
+        );
+        const usedFee = calculateFee(
+          Math.round(gasEstimation * cosmosConfig[this.store.chain].feeMultiplier),
+          GasPrice.fromString(
+            cosmosConfig[this.store.chain].gasPrice +
+              cosmosConfig[this.store.chain].coinLookup.chainDenom
+          )
+        );
+        this.gasFee = { fee: (usedFee.amount[0].amount / 1000000), gas: usedFee.gas };
+
+    }, 
     // Actions
     async sendNow() {
       this.step2 = false;
@@ -1673,13 +1717,12 @@ export default {
         const finalMsg = {
         typeUrl: foundMsgType[0],
           value: foundMsgType[1].fromPartial({
-            proposalId: this.propId,
+            proposalId: Number(this.propId),
             voter: signer.accounts[0].address,
             option: finalVote,
             metadata: this.voteReason,
           }),
         }
-    
         // Fee/Gas
         const gasEstimation = await signer.client.simulate(
           signer.accounts[0].address,
@@ -1777,8 +1820,61 @@ export default {
       }
 
     },
-    getRewards() {
-      this.$store.commit('setModal', 'getRewards')
+    async getRewards() {
+      this.step2 = false;
+      this.step3 = true;
+
+ 
+        let signer = await selectSigner(this.store.chain)
+        const foundMsgType = defaultRegistryTypes.find(
+          (element) =>
+            element[0] ===
+            "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"
+        );
+        const copieDelegator = [];
+        this.store.allMyDelegations.forEach(function (item) {
+          copieDelegator.push({
+            typeUrl: foundMsgType[0],
+            value: foundMsgType[1].fromPartial({
+              delegatorAddress: signer.accounts[0].address,
+              validatorAddress: item.op_address,
+            }),
+          });
+        }); 
+        
+        // Fee/Gas
+        const gasEstimation = await signer.client.simulate(
+          signer.accounts[0].address,
+          copieDelegator,
+          ''
+        );
+        const usedFee = calculateFee(
+          Math.round(gasEstimation * cosmosConfig[this.store.chain].feeMultiplier),
+          GasPrice.fromString(
+            cosmosConfig[this.store.chain].gasPrice +
+              cosmosConfig[this.store.chain].coinLookup.chainDenom
+          )
+        );
+        this.gasFee = { fee: (usedFee.amount[0].amount / 1000000), gas: usedFee.gas };
+
+          const feeAmount = coins(usedFee.amount[0].amount, cosmosConfig[this.store.chain].coinLookup.chainDenom);
+          let finalFee = {
+            amount: feeAmount,
+            gas: usedFee.gas,
+            granter: this.store.setFeePayer,
+          }
+        try {
+          const result = await signer.client.signAndBroadcast(signer.accounts[0].address, copieDelegator, finalFee, '')
+          assertIsDeliverTxSuccess(result)
+          console.log(result) 
+          this.txResult = result
+          this.step3 = false;
+          this.step4 = true;
+        } catch (error) {
+          console.error(error);
+          this.step3 = false;
+          this.step2 = true;
+        } 
     },
 
   }

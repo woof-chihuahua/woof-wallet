@@ -94,6 +94,27 @@
           :color="cosmosConfig[store.chain].color"
           height="40"
           variant="flat" 
+          to="/alliance"
+        >
+          Alliance
+        </v-btn>
+        <!-- <v-btn
+          v-if="store.isLogged"
+          class="me-2"
+          :color="cosmosConfig[store.chain].color"
+          height="40"
+          variant="flat" 
+          to="/swap"
+        >
+          Swap
+        </v-btn> -->
+
+        <v-btn
+          v-if="store.isLogged"
+          class="me-2"
+          :color="cosmosConfig[store.chain].color"
+          height="40"
+          variant="flat" 
           to="/stats"
         >
           Chain stats
@@ -132,7 +153,7 @@
           justify="center"
           no-gutters
         >
-          v.1.0.4
+          v.1.0.5
           <v-icon
             color="#E6A147"
             class="ml-4 mr-4"
@@ -147,7 +168,7 @@
  
 
       <v-main>
-        <v-img 
+        <!-- <v-img 
           src="https://raw.githubusercontent.com/BitCannaGlobal/cosmospay-woocommerce/main/public/img/Chihuahua.png" 
           max-height="200"
           cover
@@ -158,7 +179,7 @@
               Woof Wallet
             </h1>
           </div>
-        </v-img>
+        </v-img> -->
         <v-container class="mt-4">
           <v-row>
             <v-col
@@ -173,8 +194,77 @@
             >
               <router-view />
             </v-col>
-            <v-col v-else>
-              not loged
+            <v-col v-else> 
+              <div class="mb-4" align="center" justify="center">
+                <v-avatar 
+                  color="surface-variant"
+                  size="200" 
+                  
+                >
+                  <v-img
+                    :src="cosmosConfig[store.chain].coinLookup.icon"
+                    :alt="cosmosConfig[store.chain].name" 
+                  /> 
+                </v-avatar>
+              </div>
+              <v-row align="center" justify="center">
+                <v-col cols="auto">
+                  <v-card
+                    class="mx-auto"
+                    max-width="344"
+                    title="Keplr"
+                    subtitle="Use your keplr wallets to log in"  
+                  >
+                    <template v-slot:prepend>
+                      <img width="30" height="30" src="../keplr.png" />
+ 
+                    </template>
+                    <v-card-text>
+                      <v-btn block variant="outlined" @click="connectWallet">
+                        Connect
+                      </v-btn>
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+
+                <v-col cols="auto">
+                  <v-card
+                    class="mx-auto"
+                    max-width="344"
+                    title="Cosmostation"
+                    subtitle="Use your Cosmostation wallets to log in"
+                  >
+                    <template v-slot:prepend>
+                      <img width="30" height="30" src="../cosmostation.svg" />                      
+                    </template>
+ 
+                    <v-card-text>
+                      <v-btn block variant="outlined">
+                        Soon
+                      </v-btn>
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+
+                <v-col cols="auto">
+                  <v-card
+                    class="mx-auto"
+                    max-width="344"
+                    title="Leap"
+                    subtitle="Use your Leap wallets to log in" 
+                  >
+                    <template v-slot:prepend>
+                      <img width="30" height="30" src="../leap.svg" />                      
+                    </template>
+                    <v-card-text>
+                      <v-btn block variant="outlined">
+                        Soon
+                      </v-btn>
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+
+              </v-row>
             </v-col>
             <v-col
               cols="12"
