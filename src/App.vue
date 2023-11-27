@@ -216,7 +216,7 @@
                     subtitle="Use your keplr wallets to log in"  
                   >
                     <template v-slot:prepend>
-                      <img width="30" height="30" src="../keplr.png" />
+                      <img width="30" height="30" src="@/assets/keplr.png" />
  
                     </template>
                     <v-card-text>
@@ -235,7 +235,7 @@
                     subtitle="Use your Cosmostation wallets to log in"
                   >
                     <template v-slot:prepend>
-                      <img width="30" height="30" src="../cosmostation.svg" />                      
+                      <img width="30" height="30" src="@/assets/cosmostation.svg" />                      
                     </template>
  
                     <v-card-text>
@@ -254,7 +254,7 @@
                     subtitle="Use your Leap wallets to log in" 
                   >
                     <template v-slot:prepend>
-                      <img width="30" height="30" src="../leap.svg" />                      
+                      <img width="30" height="30" src="@/assets/leap.svg" />                      
                     </template>
                     <v-card-text>
                       <v-btn block variant="outlined">
