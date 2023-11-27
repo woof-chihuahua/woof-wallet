@@ -861,7 +861,7 @@
         size="large"
         @click="calculateGetRewards()"
       >
-        Calcul fee
+        Calculate fee
       </v-btn>
       <v-btn
         v-if="step2"

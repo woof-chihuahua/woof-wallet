@@ -62,7 +62,7 @@
           </h2> 
         </v-card-title>
         <v-card-text>
-          Activation of the module requires that the native huahua token be activated.  This will be done by a vote proposal soon
+          Waiting the first Alliance token
         </v-card-text>
       </v-card>
     </v-timeline-item>
