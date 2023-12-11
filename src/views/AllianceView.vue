@@ -58,11 +58,11 @@
       <v-card>
         <v-card-title >
           <h2 class="me-4 font-weight-light">
-            Active huahua token
+            The first Alliance token
           </h2> 
         </v-card-title>
         <v-card-text>
-          Waiting the first Alliance token
+          Approved by the Chihuahua Governance
         </v-card-text>
       </v-card>
     </v-timeline-item>

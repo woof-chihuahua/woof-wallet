@@ -153,14 +153,14 @@
           justify="center"
           no-gutters
         >
-          v.1.0.5
+          v.1.0.6 (Beta)
           <v-icon
             color="#E6A147"
             class="ml-4 mr-4"
           >
             mdi-dog
           </v-icon> 
-          Beta
+          <a href="https://chihuahua.canny.io/wallet" target="_blank">Share your feedback!</a>
         <!-- Woof corporation -->
         </v-row>
       </v-footer>
