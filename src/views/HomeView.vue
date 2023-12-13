@@ -4,7 +4,7 @@
       <div class="text-truncate">
         <v-avatar>
           <v-img
-            :src="'./src/assets/'+ store.loggedType +'.svg'"
+            :src="'../src/assets/'+ store.loggedType +'.svg'"
             alt="John"
           ></v-img>
         </v-avatar>
