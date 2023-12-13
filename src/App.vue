@@ -122,18 +122,7 @@
 
         <v-spacer />
         <v-btn
-          v-if="!store.isLogged"
-          class="me-2"
-          :color="cosmosConfig[store.chain].color"
-          height="40"
-          variant="flat"
-          width="120"
-          @click="connectWallet"
-        >
-          Keplr
-        </v-btn>
-        <v-btn
-          v-else
+          v-if="store.isLogged"
           class="me-2"
           :color="cosmosConfig[store.chain].color"
           height="40"
@@ -153,7 +142,7 @@
           justify="center"
           no-gutters
         >
-          v.1.0.6 (Beta)
+          v.1.0.7 (Beta)
           <v-icon
             color="#E6A147"
             class="ml-4 mr-4"
@@ -239,8 +228,8 @@
                     </template>
  
                     <v-card-text>
-                      <v-btn block variant="outlined">
-                        Soon
+                      <v-btn block variant="outlined" @click="connectWalletCS">
+                        Connect
                       </v-btn>
                     </v-card-text>
                   </v-card>
@@ -257,8 +246,8 @@
                       <img width="30" height="30" src="@/assets/leap.svg" />                      
                     </template>
                     <v-card-text>
-                      <v-btn block variant="outlined">
-                        Soon
+                      <v-btn block variant="outlined" @click="leapConnect">
+                        Connect
                       </v-btn>
                     </v-card-text>
                   </v-card>
@@ -344,6 +333,38 @@ export default {
 
         await this.store.setLoaded()
   
+      },
+      async connectWalletCS() {
+        await this.store.cosmoStationConnect()
+        await this.store.initRpc()
+        await this.store.getPrice()
+        await this.store.getBankModule() 
+        await this.store.getStakingModule()
+        await this.store.getDistribModule()
+        await this.store.getWalletAmount()
+        await this.store.getFeeGrantModule()
+        await this.store.getDelegations()
+        await this.store.getGovModule()
+        await this.store.getAllValidators()
+ 
+
+        await this.store.setLoaded()
+      },
+      async leapConnect() {
+        await this.store.leapConnect()
+        await this.store.initRpc()
+        await this.store.getPrice()
+        await this.store.getBankModule() 
+        await this.store.getStakingModule()
+        await this.store.getDistribModule()
+        await this.store.getWalletAmount()
+        await this.store.getFeeGrantModule()
+        await this.store.getDelegations()
+        await this.store.getGovModule()
+        await this.store.getAllValidators()
+ 
+
+        await this.store.setLoaded()
       },
       async logout() { 
         await this.store.logout()      

@@ -1272,7 +1272,7 @@ export default {
     async calculateSendFee () {
       this.step1 = false;
       this.step2 = true;
-      let signer = await selectSigner(this.store.chain)
+      let signer = await selectSigner(this.store.chain, this.store.loggedType)
 
       const foundMsgType = defaultRegistryTypes.find(
         (element) =>
@@ -1308,7 +1308,7 @@ export default {
     async calculateUndelFee () {
       this.step1 = false;
       this.step2 = true;
-      let signer = await selectSigner(this.store.chain)
+      let signer = await selectSigner(this.store.chain, this.store.loggedType)
 
       const foundMsgType = defaultRegistryTypes.find(
         (element) =>
@@ -1344,7 +1344,7 @@ export default {
     async calculateRedelFee () {
       this.step1 = false;
       this.step2 = true;
-      let signer = await selectSigner(this.store.chain)
+      let signer = await selectSigner(this.store.chain, this.store.loggedType)
 
       const foundMsgType = defaultRegistryTypes.find(
         (element) =>
@@ -1380,7 +1380,7 @@ export default {
     async calculateVoteFee () {
       this.step1 = false;
       this.step2 = true;
-      let signer = await selectSigner(this.store.chain)
+      let signer = await selectSigner(this.store.chain, this.store.loggedType)
 
       const foundMsgType = defaultRegistryTypes.find(
         (element) =>
@@ -1431,7 +1431,7 @@ export default {
     async calculateDelegateFee () {
       this.step1 = false;
       this.step2 = true;
-      let signer = await selectSigner(this.store.chain)
+      let signer = await selectSigner(this.store.chain, this.store.loggedType)
 
       const foundMsgType = defaultRegistryTypes.find(
         (element) =>
@@ -1469,7 +1469,7 @@ export default {
     async calculateGetRewards() {
       this.step1 = false;
       this.step2 = true; 
-      let signer = await selectSigner(this.store.chain)
+      let signer = await selectSigner(this.store.chain, this.store.loggedType)
 
         const foundMsgType = defaultRegistryTypes.find(
           (element) =>
@@ -1510,7 +1510,7 @@ export default {
 
       if (this.formSend) {
 
-        let signer = await selectSigner(this.store.chain)
+        let signer = await selectSigner(this.store.chain, this.store.loggedType)
         const foundMsgType = defaultRegistryTypes.find(
             (element) =>
               element[0] ===
@@ -1569,7 +1569,7 @@ export default {
       this.step3 = true;
 
       if (this.formSend) {
-        let signer = await selectSigner(this.store.chain)
+        let signer = await selectSigner(this.store.chain, this.store.loggedType)
         const foundMsgType = defaultRegistryTypes.find(
         (element) =>
           element[0] ===
@@ -1631,7 +1631,7 @@ export default {
       if (this.formSend) {
  
 
-        let signer = await selectSigner(this.store.chain)
+        let signer = await selectSigner(this.store.chain, this.store.loggedType)
         const foundMsgType = defaultRegistryTypes.find(
         (element) =>
           element[0] ===
@@ -1692,7 +1692,7 @@ export default {
       if (this.formSend) {
  
 
-        let signer = await selectSigner(this.store.chain)
+        let signer = await selectSigner(this.store.chain, this.store.loggedType)
         const foundMsgType = defaultRegistryTypes.find(
         (element) =>
           element[0] ===
@@ -1766,7 +1766,7 @@ export default {
       if (this.formSend) {
  
 
-        let signer = await selectSigner(this.store.chain)
+        let signer = await selectSigner(this.store.chain, this.store.loggedType)
         const foundMsgType = defaultRegistryTypes.find(
         (element) =>
           element[0] ===
@@ -1825,7 +1825,7 @@ export default {
       this.step3 = true;
 
  
-        let signer = await selectSigner(this.store.chain)
+        let signer = await selectSigner(this.store.chain, this.store.loggedType)
         const foundMsgType = defaultRegistryTypes.find(
           (element) =>
             element[0] ===
