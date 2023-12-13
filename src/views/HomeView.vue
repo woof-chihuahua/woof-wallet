@@ -2,7 +2,13 @@
   <main>
     <h1 class="text-h4 font-weight-bold d-flex justify-space-between mb-4 align-center">
       <div class="text-truncate">
-        My wallet
+        <v-avatar>
+          <v-img
+            :src="'/src/assets/'+ store.loggedType +'.svg'"
+            alt="John"
+          ></v-img>
+        </v-avatar>
+        Woof {{ store.nameWallet }}
       </div> 
     </h1>
     <v-row no-gutters>

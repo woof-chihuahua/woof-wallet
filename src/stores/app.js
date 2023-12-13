@@ -18,6 +18,7 @@ export const useAppStore = defineStore('data', {
   state: () => ({ 
     chain: 'mainnet',
     isLogged: false,
+    loggedType: '',
     rpcClient: null,
     rpcBase: null,
     sdkVersion: '',
@@ -382,8 +383,66 @@ export const useAppStore = defineStore('data', {
       const accounts = await offlineSigner.getAccounts();
       const getKey = await window.keplr.getKey(chainId);
       this.addrWallet = accounts[0].address
-      this.nameWallet = getKey
+      this.nameWallet = getKey.name
       this.isLogged = true
+      this.loggedType = 'keplr'
+      this.setLocalLogin(chainId, this.nameWallet, this.addrWallet, 'keplr')
+    },
+    async cosmoStationConnect() { 
+        if (!window.cosmostation) {
+          alert("Please install cosmostation extension");
+        } else {
+          const chainId = cosmosConfig[this.chain].chainId
+       
+          await window.cosmostation.providers.keplr.enable(chainId);
+       
+          const offlineSigner =
+            window.cosmostation.providers.keplr.getOfflineSigner(chainId);
+       
+          const accounts = await offlineSigner.getAccounts();
+          const getKey = await  window.cosmostation.providers.keplr.getKey(chainId); 
+
+          this.addrWallet = accounts[0].address
+          this.nameWallet = getKey.name
+          this.logged = true
+          this.loggedType = 'cosmostation'
+          this.isLogged = true
+          this.setLocalLogin(chainId, this.nameWallet, this.addrWallet, 'cosmostation')
+        } 
+        
+    },
+    async leapConnect() { 
+      if (!window.leap) {
+        alert("Please install leap extension");
+      } else {
+        const chainId = cosmosConfig[this.chain].chainId
+     
+        await window.leap.enable(chainId);
+
+        const offlineSigner = window.leap.getOfflineSigner(chainId); 
+        const accounts = await offlineSigner.getAccounts(); 
+        const getKey = await window.leap.getKey(chainId); 
+
+        this.addrWallet = accounts[0].address
+        this.nameWallet = getKey.name
+        this.logged = true
+        this.loggedType = 'leap'
+        this.isLogged = true
+        this.setLocalLogin(chainId, this.nameWallet, this.addrWallet, 'leap')
+      } 
+      
+    },
+    async setLocalLogin(chainId, name, address, type) {
+      let id = 0
+      localStorage.setItem('account',         
+        JSON.stringify({
+          id: id,
+          walletName: name,
+          data: address,
+          type: type
+        }
+        )
+      );
     },
     setLoaded() {
       this.loaded = true
