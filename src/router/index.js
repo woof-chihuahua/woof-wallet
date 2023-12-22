@@ -44,6 +44,11 @@ const router = createRouter({
       name: 'Swap',
       component: () => import('../views/SwapView.vue')
     },
+    {
+      path: '/buy-huahua',
+      name: 'BuyHuaHua',
+      component: () => import('../views/AddHuahuaView.vue')
+    },
     { 
       path: '/:pathMatch(.*)*', 
       name: 'NotFound', 
