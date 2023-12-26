@@ -355,6 +355,12 @@ export const useAppStore = defineStore('data', {
             coinDecimals: 6,
             coinGeckoId: cosmosConfig[this.chain].coingeckoId,
           },
+          {
+            coinDenom: "factory/chihuahua13jawsn574rf3f0u5rhu7e8n6sayx5gkw3eddhp/uwoof",
+            coinMinimalDenom: 'uwoof',
+            coinDecimals: 6,
+            coinGeckoId: "",
+          },
         ],
         feeCurrencies: [
           {

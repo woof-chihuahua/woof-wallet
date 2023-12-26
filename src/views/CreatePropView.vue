@@ -327,4 +327,3 @@ import cosmosConfig from '@/cosmos.config'
     },
   }
 </script>
-Name
