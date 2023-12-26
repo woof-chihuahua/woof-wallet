@@ -119,7 +119,7 @@
         >
           Chain stats
         </v-btn>
-
+        <v-spacer />
         <v-btn
           v-if="store.isLogged"
           class="me-2"
@@ -130,7 +130,6 @@
         >
           Buy huahua
         </v-btn>
-        <v-spacer />
         <v-btn
           v-if="store.isLogged"
           class="me-2"
