@@ -30,10 +30,14 @@
       </v-col>
     </v-row> -->
  
-    <v-card >
+  <v-row>
+    <v-col
+      cols="12"
+      sm="6"
+    >
   <v-sheet 
     border
-    rounded="lg"
+    rounded="lg" 
   >
   
     <v-form ref="form">
@@ -62,6 +66,17 @@
               required
             />
           </v-col>
+          <!-- <v-col
+            cols="12"
+            sm="12"
+          >
+            <v-text-field
+              v-model="metadataFile"
+              label="Metadata file"
+              variant="outlined"
+              required
+            />
+          </v-col> -->
           <v-col
             cols="12"
             sm="12"
@@ -73,8 +88,15 @@
               label="Proposal text"
               required
             /> 
-          </v-col>
-
+          </v-col> 
+          <v-col
+            cols="12"
+            sm="12"
+          >
+          
+          </v-col> 
+          
+          
           <v-col
             cols="12"
             sm="12"
@@ -252,6 +274,7 @@
             </v-col>
           </v-row>
         </span>
+        
         <v-btn
           v-if="propType === 'Parameter Change Proposal'"
           @click="add"
@@ -260,12 +283,37 @@
         </v-btn>
       </v-container>
     </v-form>
-  </v-sheet>
-</v-card>
+  </v-sheet> 
+ </v-col>
+ <v-col       cols="12"
+      sm="6"> 
+  <v-sheet 
+    border
+    rounded="lg" 
+    class="pa-6"
+  > 
+      <h1 class="mb-2">{{ propTitle }}
+        <v-chip v-if="propType">
+          {{ propType }}
+        </v-chip>
+      
+      </h1>
+      <v-divider v-if="propType || propTitle"></v-divider>
+      
+      <div v-html="resultMd" class="mt-4" />
+ 
+  </v-sheet> 
+ </v-col>
+</v-row>  
 </template>
 <script>
 import { useAppStore } from '@/stores/app'
 import cosmosConfig from '@/cosmos.config'
+
+import MarkdownIt from "markdown-it";
+import axios from "axios";
+
+ 
 
   export default {
     setup() {
@@ -274,8 +322,12 @@ import cosmosConfig from '@/cosmos.config'
         store
       }
     },
+    components: {
+
+    },
     data: () => ({
       cosmosConfig: cosmosConfig,
+      markdown: MarkdownIt(),
       name: '',
       nameRules: [
         v => !!v || 'Name is required',
@@ -292,6 +344,7 @@ import cosmosConfig from '@/cosmos.config'
       checkbox: false,
       // Form
       propType: "",
+      metadataFile: "",
       propText: "",
       propTitle: "",
       proposer: "",
@@ -304,8 +357,24 @@ import cosmosConfig from '@/cosmos.config'
       upgradeHeight: "",
       upgradeInfo: "",
       textFields: [],
+      resultMd: "",
     }),
-
+    watch: {
+      propText(value) {
+        if (value) {
+          this.resultMd = this.markdown.render(this.propText);
+        }
+      },
+      async metadataFile(value) {
+        if (value) {
+          const getPropsData = await axios(
+            value
+          );
+          console.log(getPropsData.data)
+          // this.resultMd = this.markdown.render(this.metadataFile);
+        }
+      },
+    }, 
     methods: {
       async validate () {
         const { valid } = await this.$refs.form.validate()
@@ -327,4 +396,10 @@ import cosmosConfig from '@/cosmos.config'
     },
   }
 </script>
-Name
+<style>
+ul,
+li {
+  margin-left: 40;
+  padding-left: 40;
+}
+</style>

@@ -120,6 +120,16 @@
           Chain stats
         </v-btn>
 
+        <v-btn
+          v-if="store.isLogged"
+          class="me-2"
+          :color="cosmosConfig[store.chain].color"
+          height="40"
+          variant="flat" 
+          to="/buy-huahua"
+        >
+          Buy huahua
+        </v-btn>
         <v-spacer />
         <v-btn
           v-if="store.isLogged"
