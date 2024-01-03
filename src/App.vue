@@ -119,6 +119,16 @@
         >
           Chain stats
         </v-btn>
+        <v-btn
+          v-if="store.isLogged"
+          class="me-2"
+          :color="cosmosConfig[store.chain].color"
+          height="40"
+          variant="flat" 
+          to="/token-factory"
+        >
+          Token Factory
+        </v-btn>
         <v-spacer />
         <v-btn
           v-if="store.isLogged"
@@ -151,14 +161,17 @@
           justify="center"
           no-gutters
         >
-          v.1.0.7 (Beta)
+          v.1.0.8 (Beta)
           <v-icon
             color="#E6A147"
             class="ml-4 mr-4"
           >
             mdi-dog
           </v-icon> 
-          <a href="https://chihuahua.canny.io/wallet" target="_blank">Share your feedback!</a>
+          <a
+            href="https://chihuahua.canny.io/wallet"
+            target="_blank"
+          >Share your feedback!</a>
         <!-- Woof corporation -->
         </v-row>
       </v-footer>
@@ -193,11 +206,14 @@
               <router-view />
             </v-col>
             <v-col v-else> 
-              <div class="mb-4" align="center" justify="center">
+              <div
+                class="mb-4"
+                align="center"
+                justify="center"
+              >
                 <v-avatar 
                   color="surface-variant"
-                  size="200" 
-                  
+                  size="200"
                 >
                   <v-img
                     :src="cosmosConfig[store.chain].coinLookup.icon"
@@ -205,7 +221,10 @@
                   /> 
                 </v-avatar>
               </div>
-              <v-row align="center" justify="center">
+              <v-row
+                align="center"
+                justify="center"
+              >
                 <v-col cols="auto">
                   <v-card
                     class="mx-auto"
@@ -213,12 +232,19 @@
                     title="Keplr"
                     subtitle="Use your keplr wallets to log in"  
                   >
-                    <template v-slot:prepend>
-                      <img width="30" height="30" src="@/assets/keplr.png" />
- 
+                    <template #prepend>
+                      <img
+                        width="30"
+                        height="30"
+                        src="@/assets/keplr.png"
+                      >
                     </template>
                     <v-card-text>
-                      <v-btn block variant="outlined" @click="connectWallet">
+                      <v-btn
+                        block
+                        variant="outlined"
+                        @click="connectWallet"
+                      >
                         Connect
                       </v-btn>
                     </v-card-text>
@@ -232,12 +258,20 @@
                     title="Cosmostation"
                     subtitle="Use your Cosmostation wallets to log in"
                   >
-                    <template v-slot:prepend>
-                      <img width="30" height="30" src="@/assets/cosmostation.svg" />                      
+                    <template #prepend>
+                      <img
+                        width="30"
+                        height="30"
+                        src="@/assets/cosmostation.svg"
+                      >                      
                     </template>
  
                     <v-card-text>
-                      <v-btn block variant="outlined" @click="connectWalletCS">
+                      <v-btn
+                        block
+                        variant="outlined"
+                        @click="connectWalletCS"
+                      >
                         Connect
                       </v-btn>
                     </v-card-text>
@@ -251,17 +285,24 @@
                     title="Leap"
                     subtitle="Use your Leap wallets to log in" 
                   >
-                    <template v-slot:prepend>
-                      <img width="30" height="30" src="@/assets/leap.svg" />                      
+                    <template #prepend>
+                      <img
+                        width="30"
+                        height="30"
+                        src="@/assets/leap.svg"
+                      >                      
                     </template>
                     <v-card-text>
-                      <v-btn block variant="outlined" @click="leapConnect">
+                      <v-btn
+                        block
+                        variant="outlined"
+                        @click="leapConnect"
+                      >
                         Connect
                       </v-btn>
                     </v-card-text>
                   </v-card>
                 </v-col>
-
               </v-row>
             </v-col>
             <v-col

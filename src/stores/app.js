@@ -51,6 +51,8 @@ export const useAppStore = defineStore('data', {
     formFeeGranter: null,
     // Proposals
     allProposals: null,
+    // Token Factory
+    userTokensFactory: null,
   }),
   actions: {
     resetData() {
@@ -327,7 +329,62 @@ export const useAppStore = defineStore('data', {
       }
    
       this.allMyDelegations = copieRewards
-    },    
+    },  
+    async getTokenFactory() {
+      const getAllTokens = await axios(
+        "https://api.chihuahua.wtf/cosmos/bank/v1beta1/denoms_metadata"  
+      );       
+      const getUserTokens = await axios(
+        "https://api.chihuahua.wtf/osmosis/tokenfactory/v1beta1/denoms_from_creator/" + this.addrWallet
+      );
+      const getUserSupply = await axios(
+        "https://api.chihuahua.wtf/cosmos/bank/v1beta1/balances/" + this.addrWallet
+      );
+      const getAllSupply = await axios(
+        "https://api.chihuahua.wtf/cosmos/bank/v1beta1/supply"
+      );
+
+      // Join getAllTokens and getUserTokens
+      const allTokens = getAllTokens.data.metadatas.map((item) => {
+        const userToken = getUserTokens.data.denoms.find(
+          (userToken) => userToken.denom === item.base.denom
+        );
+        return {
+          ...item,
+          userToken,
+        };
+      }); 
+      // Create for from userToken to get the supply
+      for (const [key, value] of Object.entries(allTokens)) {
+          let detailToken = value
+
+          const foundSupply = getAllSupply.data.supply.find((element) => element.denom === detailToken.base);
+          const foundAmountToken = getUserSupply.data.balances.find((element) => element.denom === detailToken.base);
+          // const foundTokenMetadata = getAllTokens.data.metadatas.find((element) => element.base === detailToken.base); 
+          const foundMyToken = getUserTokens.data.denoms.find((element) => element === detailToken.base); 
+
+          if(typeof foundSupply !== 'undefined') {
+            allTokens[key].supply = foundSupply.amount;
+          } else {
+            allTokens[key].supply = 0;
+          }
+
+          if(typeof foundAmountToken !== 'undefined') {
+            allTokens[key].myToken = foundAmountToken.amount;
+          } else {
+            allTokens[key].myToken = 0;
+          }
+
+          if(typeof foundMyToken !== 'undefined') {
+            allTokens[key].isAdmin = true;
+          } else {
+            allTokens[key].isAdmin = false;
+          }
+
+          
+        }      
+      this.userTokensFactory = allTokens;  
+    },
     logout() {
       this.isLogged = false
     },
@@ -354,6 +411,12 @@ export const useAppStore = defineStore('data', {
             coinMinimalDenom: cosmosConfig[this.chain].coinLookup.chainDenom,
             coinDecimals: 6,
             coinGeckoId: cosmosConfig[this.chain].coingeckoId,
+          },
+          {
+            coinDenom: "factory/chihuahua13jawsn574rf3f0u5rhu7e8n6sayx5gkw3eddhp/uwoof",
+            coinMinimalDenom: 'uwoof',
+            coinDecimals: 6,
+            coinGeckoId: "",
           },
         ],
         feeCurrencies: [

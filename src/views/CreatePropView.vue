@@ -16,8 +16,8 @@
     text="This page is under development! no action is possible"
     variant="tonal"
     class="mb-2"
-  ></v-alert>
-<!--   <v-row no-gutters>
+  />
+  <!--   <v-row no-gutters>
       <v-col>
         <v-sheet class="pa-2 ma-2">
           .v-col-auto
@@ -30,209 +30,85 @@
       </v-col>
     </v-row> -->
  
-  <v-row>
-    <v-col
-      cols="12"
-      sm="6"
-    >
-  <v-sheet 
-    border
-    rounded="lg" 
-  >
-  
-    <v-form ref="form">
-      <v-container>
-        <v-row>
-          <v-col
-            cols="12"
-            sm="12"
-          >
-            <v-select
-              v-model="propType"
-              :items="items"
-              label="Proposal type"
-              required
-              variant="outlined"
-            />
-          </v-col>
-          <v-col
-            cols="12"
-            sm="12"
-          >
-            <v-text-field
-              v-model="propTitle"
-              label="Proposal title"
-              variant="outlined"
-              required
-            />
-          </v-col>
-          <!-- <v-col
-            cols="12"
-            sm="12"
-          >
-            <v-text-field
-              v-model="metadataFile"
-              label="Metadata file"
-              variant="outlined"
-              required
-            />
-          </v-col> -->
-          <v-col
-            cols="12"
-            sm="12"
-          >
-            <v-textarea
-              v-model="propText"
-              variant="outlined"
-              name="input-7-4"
-              label="Proposal text"
-              required
-            /> 
-          </v-col> 
-          <v-col
-            cols="12"
-            sm="12"
-          >
-          
-          </v-col> 
-          
-          
-          <v-col
-            cols="12"
-            sm="12"
-            md="12"
-          >
-            <v-text-field
-              v-model="initDeposit"
-              variant="outlined"
-              :label="'Initial Deposit (' + cosmosConfig[store.chain].coinLookup.viewDenom + ')'"
-              required
-            />
-          </v-col>
-
-          <v-col
-            v-if="propType === 'Community Pool Spend Proposal'"
-            cols="12"
-            sm="6"
-            md="6"
-          >
-            <v-text-field
-              v-model="amountSpend"
-              variant="outlined"
-              label="Amount spend"
-              required
-            />
-          </v-col>
-          <v-col
-            v-if="propType === 'Community Pool Spend Proposal'"
-            cols="12"
-            sm="6"
-            md="6"
-          >
-            <v-text-field
-              v-model="receivingAddress"
-              variant="outlined"
-              label="Receiving address"
-              required
-            />
-          </v-col> 
-          <v-col
-            v-if="propType === 'Software Upgrade Proposal'"
-            cols="12"
-            sm="6"
-            md="6"
-          >
-            <v-text-field
-              v-model="upgradeName"
-              variant="outlined"
-              label="Upgrade Name"
-              required
-            />
-          </v-col>
-          <v-col
-            v-if="propType === 'Software Upgrade Proposal'"
-            cols="12"
-            sm="6"
-            md="6"
-          >
-            <v-text-field
-              v-model="upgradeHeight"
-              variant="outlined"
-              label="Upgrade Height"
-              required
-            />
-          </v-col>
-          <v-col
-            v-if="propType === 'Software Upgrade Proposal'"
-            cols="12"
-            sm="12"
-            md="12"
-          >
-            <v-text-field
-              v-model="upgradeInfo"
-              variant="outlined"
-              label="Upgrade Info"
-              required
-            />
-          </v-col>
-
-          <v-col
-            v-if="propType === 'Parameter Change Proposal'"
-            cols="12"
-            sm="4"
-            md="4"
-          >
-            <v-text-field
-              v-model="amountSpend"
-              variant="outlined"
-              label="Subspace"
-              required
-            />
-          </v-col>
-          <v-col
-            v-if="propType === 'Parameter Change Proposal'"
-            cols="12"
-            sm="4"
-            md="4"
-          >
-            <v-text-field
-              v-model="receivingAddress"
-              variant="outlined"
-              label="Key"
-              required
-            />
-          </v-col>
-          <v-col
-            v-if="propType === 'Parameter Change Proposal'"
-            cols="12"
-            sm="4"
-            md="4"
-          >
-            <v-text-field
-              v-model="receivingAddress"
-              variant="outlined"
-              label="Value"
-              required
-            />
-          </v-col>
-        </v-row>
-        
-        <span 
-          v-for="(i) in textFields"              
-          :key="i"
-        > 
-          <v-row>
             <v-col
-              v-if="propType === 'Parameter Change Proposal'"
               cols="12"
+              sm="12"
+              md="12"
             >
-              <v-btn
-                class="error"
-                @click="remove(i)"
-              >
-                <v-icon large> mdi-delete-forever-outline </v-icon>
-              </v-btn>
+              <v-text-field
+                v-model="initDeposit"
+                variant="outlined"
+                :label="'Initial Deposit (' + cosmosConfig[store.chain].coinLookup.viewDenom + ')'"
+                required
+              />
             </v-col>
+
+            <v-col
+              v-if="propType === 'Community Pool Spend Proposal'"
+              cols="12"
+              sm="6"
+              md="6"
+            >
+              <v-text-field
+                v-model="amountSpend"
+                variant="outlined"
+                label="Amount spend"
+                required
+              />
+            </v-col>
+            <v-col
+              v-if="propType === 'Community Pool Spend Proposal'"
+              cols="12"
+              sm="6"
+              md="6"
+            >
+              <v-text-field
+                v-model="receivingAddress"
+                variant="outlined"
+                label="Receiving address"
+                required
+              />
+            </v-col> 
+            <v-col
+              v-if="propType === 'Software Upgrade Proposal'"
+              cols="12"
+              sm="6"
+              md="6"
+            >
+              <v-text-field
+                v-model="upgradeName"
+                variant="outlined"
+                label="Upgrade Name"
+                required
+              />
+            </v-col>
+            <v-col
+              v-if="propType === 'Software Upgrade Proposal'"
+              cols="12"
+              sm="6"
+              md="6"
+            >
+              <v-text-field
+                v-model="upgradeHeight"
+                variant="outlined"
+                label="Upgrade Height"
+                required
+              />
+            </v-col>
+            <v-col
+              v-if="propType === 'Software Upgrade Proposal'"
+              cols="12"
+              sm="12"
+              md="12"
+            >
+              <v-text-field
+                v-model="upgradeInfo"
+                variant="outlined"
+                label="Upgrade Info"
+                required
+              />
+            </v-col>
+
             <v-col
               v-if="propType === 'Parameter Change Proposal'"
               cols="12"
@@ -273,38 +149,6 @@
               />
             </v-col>
           </v-row>
-        </span>
-        
-        <v-btn
-          v-if="propType === 'Parameter Change Proposal'"
-          @click="add"
-        >
-          add
-        </v-btn>
-      </v-container>
-    </v-form>
-  </v-sheet> 
- </v-col>
- <v-col       cols="12"
-      sm="6"> 
-  <v-sheet 
-    border
-    rounded="lg" 
-    class="pa-6"
-  > 
-      <h1 class="mb-2">{{ propTitle }}
-        <v-chip v-if="propType">
-          {{ propType }}
-        </v-chip>
-      
-      </h1>
-      <v-divider v-if="propType || propTitle"></v-divider>
-      
-      <div v-html="resultMd" class="mt-4" />
- 
-  </v-sheet> 
- </v-col>
-</v-row>  
 </template>
 <script>
 import { useAppStore } from '@/stores/app'
@@ -395,11 +239,4 @@ import axios from "axios";
       },    
     },
   }
-</script>
-<style>
-ul,
-li {
-  margin-left: 40;
-  padding-left: 40;
-}
-</style>
+

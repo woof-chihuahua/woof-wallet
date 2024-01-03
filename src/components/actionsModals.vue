@@ -779,10 +779,10 @@
             min-height="50"
             class="pt-2"
           >
-          {{ store.totalRewards }}
-          <strong 
-                  :style="'color:' + cosmosConfig[store.chain].color"
-                > {{ cosmosConfig[store.chain].coinLookup.viewDenom }}</strong>
+            {{ store.totalRewards }}
+            <strong 
+              :style="'color:' + cosmosConfig[store.chain].color"
+            > {{ cosmosConfig[store.chain].coinLookup.viewDenom }}</strong>
           </v-sheet>
         </v-form>
         <div v-if="step2">
@@ -871,8 +871,7 @@
         @click="getRewards()"
       >
         Get my rewards
-      </v-btn> 
-       
+      </v-btn>
     </v-card>
   </v-dialog>   
   <v-dialog
@@ -1036,7 +1035,7 @@ import {
   coins,
 } from "@cosmjs/proto-signing";
 
-import bech32 from "bech32";
+import { bech32 } from "bech32";
 import { selectSigner, calculFee } from "@/libs/signer";
 import { useAppStore } from '@/stores/app'
 import cosmosConfig from '@/cosmos.config'
@@ -1045,9 +1044,11 @@ import FeePayer from "@/components/feePayer.vue";
 
 function checkBech32Address(address) {
   try {
+    console.log(bech32.decode(address))
     bech32.decode(address);
     return true;
   } catch (error) {
+    console.log(error)
     return false;
   }
 }
