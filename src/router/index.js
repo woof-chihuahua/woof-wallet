@@ -45,11 +45,6 @@ const router = createRouter({
       component: () => import('../views/SwapView.vue')
     },
     {
-      path: '/token-factory',
-      name: 'Swap',
-      component: () => import('../views/TokenFactoryView.vue')
-    },
-    {
       path: '/buy-huahua',
       name: 'BuyHuaHua',
       component: () => import('../views/AddHuahuaView.vue')

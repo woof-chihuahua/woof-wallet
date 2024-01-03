@@ -119,18 +119,17 @@
         >
           Chain stats
         </v-btn>
+        <v-spacer />
         <v-btn
           v-if="store.isLogged"
           class="me-2"
           :color="cosmosConfig[store.chain].color"
           height="40"
           variant="flat" 
-          to="/token-factory"
+          to="/buy-huahua"
         >
-          Token Factory
+          Buy huahua
         </v-btn>
-         
-        <v-spacer />
         <v-btn
           v-if="store.isLogged"
           class="me-2"

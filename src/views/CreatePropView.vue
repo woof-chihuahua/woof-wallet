@@ -30,50 +30,6 @@
       </v-col>
     </v-row> -->
  
-  <v-card>
-    <v-sheet 
-      border
-      rounded="lg"
-    >
-      <v-form ref="form">
-        <v-container>
-          <v-row>
-            <v-col
-              cols="12"
-              sm="12"
-            >
-              <v-select
-                v-model="propType"
-                :items="items"
-                label="Proposal type"
-                required
-                variant="outlined"
-              />
-            </v-col>
-            <v-col
-              cols="12"
-              sm="12"
-            >
-              <v-text-field
-                v-model="propTitle"
-                label="Proposal title"
-                variant="outlined"
-                required
-              />
-            </v-col>
-            <v-col
-              cols="12"
-              sm="12"
-            >
-              <v-textarea
-                v-model="propText"
-                variant="outlined"
-                name="input-7-4"
-                label="Proposal text"
-                required
-              /> 
-            </v-col>
-
             <v-col
               cols="12"
               sm="12"
@@ -193,78 +149,15 @@
               />
             </v-col>
           </v-row>
-        
-          <span 
-            v-for="(i) in textFields"              
-            :key="i"
-          > 
-            <v-row>
-              <v-col
-                v-if="propType === 'Parameter Change Proposal'"
-                cols="12"
-              >
-                <v-btn
-                  class="error"
-                  @click="remove(i)"
-                >
-                  <v-icon large> mdi-delete-forever-outline </v-icon>
-                </v-btn>
-              </v-col>
-              <v-col
-                v-if="propType === 'Parameter Change Proposal'"
-                cols="12"
-                sm="4"
-                md="4"
-              >
-                <v-text-field
-                  v-model="amountSpend"
-                  variant="outlined"
-                  label="Subspace"
-                  required
-                />
-              </v-col>
-              <v-col
-                v-if="propType === 'Parameter Change Proposal'"
-                cols="12"
-                sm="4"
-                md="4"
-              >
-                <v-text-field
-                  v-model="receivingAddress"
-                  variant="outlined"
-                  label="Key"
-                  required
-                />
-              </v-col>
-              <v-col
-                v-if="propType === 'Parameter Change Proposal'"
-                cols="12"
-                sm="4"
-                md="4"
-              >
-                <v-text-field
-                  v-model="receivingAddress"
-                  variant="outlined"
-                  label="Value"
-                  required
-                />
-              </v-col>
-            </v-row>
-          </span>
-          <v-btn
-            v-if="propType === 'Parameter Change Proposal'"
-            @click="add"
-          >
-            add
-          </v-btn>
-        </v-container>
-      </v-form>
-    </v-sheet>
-  </v-card>
 </template>
 <script>
 import { useAppStore } from '@/stores/app'
 import cosmosConfig from '@/cosmos.config'
+
+import MarkdownIt from "markdown-it";
+import axios from "axios";
+
+ 
 
   export default {
     setup() {
@@ -273,8 +166,12 @@ import cosmosConfig from '@/cosmos.config'
         store
       }
     },
+    components: {
+
+    },
     data: () => ({
       cosmosConfig: cosmosConfig,
+      markdown: MarkdownIt(),
       name: '',
       nameRules: [
         v => !!v || 'Name is required',
@@ -291,6 +188,7 @@ import cosmosConfig from '@/cosmos.config'
       checkbox: false,
       // Form
       propType: "",
+      metadataFile: "",
       propText: "",
       propTitle: "",
       proposer: "",
@@ -303,8 +201,24 @@ import cosmosConfig from '@/cosmos.config'
       upgradeHeight: "",
       upgradeInfo: "",
       textFields: [],
+      resultMd: "",
     }),
-
+    watch: {
+      propText(value) {
+        if (value) {
+          this.resultMd = this.markdown.render(this.propText);
+        }
+      },
+      async metadataFile(value) {
+        if (value) {
+          const getPropsData = await axios(
+            value
+          );
+          console.log(getPropsData.data)
+          // this.resultMd = this.markdown.render(this.metadataFile);
+        }
+      },
+    }, 
     methods: {
       async validate () {
         const { valid } = await this.$refs.form.validate()
@@ -325,4 +239,4 @@ import cosmosConfig from '@/cosmos.config'
       },    
     },
   }
-</script>
+
