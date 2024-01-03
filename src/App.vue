@@ -161,7 +161,7 @@
           justify="center"
           no-gutters
         >
-          v.1.0.7 (Beta)
+          v.1.0.8 (Beta)
           <v-icon
             color="#E6A147"
             class="ml-4 mr-4"
