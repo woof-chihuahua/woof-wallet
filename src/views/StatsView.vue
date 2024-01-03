@@ -73,8 +73,7 @@
           :gradient="cosmosConfig[store.chain].colorChart"
           auto-draw
           smooth
-        >
-        </trend> 
+        /> 
       </v-sheet>
     </v-col>
   </v-row>

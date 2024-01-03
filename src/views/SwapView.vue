@@ -1,15 +1,16 @@
 <template>
-
-  <div justify="center">
-    
-  </div>
+  <div justify="center" />
   <v-row justify="center">
-    
     <v-col
       cols="12"
       sm="6"  
-    ><h1>Woof Swap</h1>
-      <v-card border ref="form" class="mt-4">
+    >
+      <h1>Woof Swap</h1>
+      <v-card
+        ref="form"
+        border
+        class="mt-4"
+      >
         <v-card-text>
           <v-container>
             <v-row>
@@ -25,25 +26,24 @@
                   :hint="amountWallet1"
                   persistent-hint
                 >
-                  <template v-slot:append>
+                  <template #append>
                     <v-fade-transition leave-absolute>
                       <v-progress-circular
                         v-if="loading"
                         size="24"
                         color="info"
                         indeterminate
-                      ></v-progress-circular>
+                      />
 
                       <v-avatar v-else>
                         <img
                         
-                        width="32"
-                        height="32"
-                        :src="select.img"
-                        alt=""
-                      >
+                          width="32"
+                          height="32"
+                          :src="select.img"
+                          alt=""
+                        >
                       </v-avatar>
-
                     </v-fade-transition>
                   </template>
                 </v-text-field>
@@ -60,23 +60,20 @@
                   label="Coin"
                   required
                   variant="outlined" 
+                />
+                <v-col
+                  cols="12"
+                  sm="6"
+                  md="12"
+                  align-center
+                  class="text-center"
                 >
- 
- 
-                </v-select>
-                              <v-col
-                cols="12"
-                sm="6"
-                md="12"
-                align-center
-                class="text-center"
-              >
-                <v-icon
-                  x-large
-                >
-                  mdi-swap-vertical-bold
-                </v-icon>
-              </v-col>
+                  <v-icon
+                    x-large
+                  >
+                    mdi-swap-vertical-bold
+                  </v-icon>
+                </v-col>
               </v-col>
 
               <v-col
@@ -92,23 +89,23 @@
                   persistent-hint
                   disabled
                 >
-                  <template v-slot:append>
+                  <template #append>
                     <v-fade-transition leave-absolute>
                       <v-progress-circular
                         v-if="loading"
                         size="24"
                         color="info"
                         indeterminate
-                      ></v-progress-circular>
+                      />
 
                       <v-avatar v-else>
                         <img
                         
-                        width="32"
-                        height="32"
-                        :src="select2.img"
-                        alt=""
-                      >
+                          width="32"
+                          height="32"
+                          :src="select2.img"
+                          alt=""
+                        >
                       </v-avatar>
                     </v-fade-transition>
                   </template>
@@ -128,21 +125,21 @@
                   variant="outlined"
                   @input="setSelected2(select2)"
                 >
-                  <template slot="item" slot-scope="data">
+                  <template #item="data">
                     <img
                       width="24"
                       height="24"
                       :src="data.item.img"
                       alt=""
                     >
-                    <span class="cb-item">{{data.item.text}}</span>
+                    <span class="cb-item">{{ data.item.text }}</span>
                   </template>
                 </v-select>
               </v-col>
             </v-row>
           </v-container>
  
-            <!--<v-simple-table>
+          <!--<v-simple-table>
               <template v-slot:default>
 
                 <tbody>
@@ -181,18 +178,13 @@
                 </tbody>
               </template>
             </v-simple-table>-->
-
-
         </v-card-text>
-        <v-divider class="mt-12"></v-divider>
+        <v-divider class="mt-12" />
         <v-card-actions>
-  
-
           <v-btn
             color="#E7A246" 
             block
             @click="start"
-            
           >
             Submit (soon)
           </v-btn>
@@ -209,7 +201,7 @@
   </v-row>
 </template>
 
-<script > 
+<script> 
 import axios from 'axios'
 import { useAppStore } from '@/stores/app'
 import { Tendermint37Client } from "@cosmjs/tendermint-rpc"; 
