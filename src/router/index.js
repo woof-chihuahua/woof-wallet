@@ -49,6 +49,11 @@ const router = createRouter({
       name: 'BuyHuaHua',
       component: () => import('../views/AddHuahuaView.vue')
     },
+    {
+      path: '/token-factory',
+      name: 'Swap',
+      component: () => import('../views/TokenFactoryView.vue')
+    },
     { 
       path: '/:pathMatch(.*)*', 
       name: 'NotFound', 
