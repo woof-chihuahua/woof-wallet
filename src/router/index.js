@@ -51,7 +51,7 @@ const router = createRouter({
     },
     {
       path: '/token-factory',
-      name: 'Swap',
+      name: 'TokenFactory',
       component: () => import('../views/TokenFactoryView.vue')
     },
     { 

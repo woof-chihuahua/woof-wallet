@@ -13,6 +13,7 @@
       </v-btn>
     </div>
   </h1>  
+
   <v-card
     v-if="!authorised"
     flat
@@ -37,6 +38,10 @@
     title="All tokens factory"
     class="mb-12"
   >
+    <template v-slot:append>
+      <v-checkbox v-model="displayOnlyAdmin" label="View only my tokens" @click="onlyAdmin()"></v-checkbox>
+    </template>
+    
     <template #text>
       <v-text-field
         v-model="search"
@@ -47,13 +52,19 @@
         hide-details
       />
     </template>
-
+ 
     <v-data-table
       v-if="isLoaded"
       :headers="headers"
-      :items="store.userTokensFactory"
+      :items="finalTokenFatory"
       :search="search"
     > 
+      <template #item.symbol="{ item }"> 
+         {{ item.symbol }}
+      </template> 
+      <template #item.display="{ item }"> 
+         {{ truncateString(item.base) }}
+      </template> 
       <template #item.myToken="{ item }"> 
         <v-btn
           v-if="item.myToken > 0"
@@ -202,10 +213,11 @@
                 <v-btn
                   v-if="item.isAdmin"
                   class="mb-2 mt-2 me-2"
-                  icon           
+                  icon         
+                  :disabled="item.supply > 0 ? false : true"  
                   :color="cosmosConfig[store.chain].color"
                   @click="openDialogBurn(item)"
-                >
+                > 
                   <v-tooltip
                     activator="parent"
                     location="top"
@@ -221,136 +233,6 @@
       </template>
     </v-data-table>
   </v-card>
-
-  <!--  <v-data-iterator
-    :items="userTokens"
-    :items-per-page="itemsPerPage"
-  >
-    <template v-slot:header="{ page, pageCount, prevPage, nextPage }">
-      <h1 class="text-h4 font-weight-bold d-flex justify-space-between mb-4 align-center">
-        <div class="text-truncate">
-          Token Factory 
-          <v-btn
-            icon
-            @click="openDialogCreate()"
-          >
-
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
-        </div>
-
-        <div class="d-flex align-center">
-          <v-btn
-            class="me-8"
-            variant="text"
-            @click="onClickSeeAll"
-          >
-            <span class="text-decoration-underline text-none">See all</span>
-          </v-btn>
-
-          <div class="d-inline-flex">
-            <v-btn
-              :disabled="page === 1"
-              icon="mdi-arrow-left"
-              size="small"
-              variant="tonal"
-              class="me-2"
-              @click="prevPage"
-            ></v-btn>
-
-            <v-btn
-              :disabled="page === pageCount"
-              icon="mdi-arrow-right"
-              size="small"
-              variant="tonal"
-              @click="nextPage"
-            ></v-btn>
-          </div>
-        </div>
-      </h1>
-    </template>
-
-    <template v-slot:default="{ items }">
-      <v-row>
-        <v-col
-          v-for="(item, i) in items"
-          :key="i"
-          cols="12"
-          sm="6"
-          xl="3"
-        >
-          <v-sheet border rounded="lg">
- 
-            <v-list-item
-              :title="item.raw.symbol"
-              lines="two"
-              density="comfortable"
-              :subtitle="item.raw.description"
-            >
-              <template v-slot:title>
-                <strong class="text-h6">
-                  {{ item.raw.symbol }}
-                </strong>
-              </template>
-            </v-list-item>
-            
-            <v-table density="compact" class="text-caption">
-              <tbody>
-                <tr align="right">
-                  <th>Supply:</th> 
-                  <td>
-                    <v-btn variant="plain">
-                      {{ millify(item.raw.supply / Number("1e" + item.raw.denom_units[1]?.exponent)) }} {{ item.raw.symbol }}
-                      <v-tooltip
-                        activator="parent"
-                        location="start"
-                      >
-                        {{ item.raw.supply / Number("1e" + item.raw.denom_units[1]?.exponent) }} {{ item.raw.symbol }}
-                      </v-tooltip>  
-                    </v-btn>
-                  </td>
-                </tr>
-                <tr align="right">
-                  <th>Your tokens:</th>
-                  <td>
-                    <v-btn variant="plain">
-                      {{ millify(item.raw.myToken / Number("1e" + item.raw.denom_units[1]?.exponent)) }} {{ item.raw.symbol }}
-                      <v-tooltip
-                        activator="parent"
-                        location="start"
-                      >
-                        {{ item.raw.myToken / Number("1e" + item.raw.denom_units[1]?.exponent) }} {{ item.raw.symbol }}
-                      </v-tooltip>  
-                    </v-btn>
-                  </td>
-                </tr>
- 
- 
-              </tbody>
-            </v-table>
-            <v-divider></v-divider>
-            <v-container>
-              <v-row justify="center" align="center">
- 
-
-                <v-col cols="auto">
-                  <v-btn density="default" @click="dialogBurn = true">Burn</v-btn>
-                </v-col>
-
-                <v-col cols="auto">
-                  <v-btn density="default">Send</v-btn>
-                </v-col>
-                <v-col cols="auto">
-                  <v-btn density="default" @click="openDialog(item.raw.myToken  / Number('1e' + item.raw.denom_units[1]?.exponent), item.raw.symbol)">Airdrop</v-btn>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-sheet>
-        </v-col>
-      </v-row>
-    </template>
- 
-  </v-data-iterator> -->
  
   <v-row justify="center">
     <v-dialog
@@ -385,7 +267,34 @@
             />
           </template>
         </v-toolbar>
+        
         <v-card-text>
+          <!-- <v-list lines="two">
+ 
+
+      <v-list-subheader inset>Files</v-list-subheader>
+
+      <v-list-item
+        v-for="file in files"
+        :key="file.title"
+        :title="file.title"
+        :subtitle="file.subtitle"
+      >
+        <template v-slot:prepend>
+          <v-avatar :color="file.color">
+            <v-icon color="white">{{ file.icon }}</v-icon>
+          </v-avatar>
+        </template>
+
+        <template v-slot:append>
+          <v-btn
+            color="grey-lighten-1"
+            icon="mdi-information"
+            variant="text"
+          ></v-btn>
+        </template>
+      </v-list-item>
+    </v-list> -->
           <v-stepper 
             v-model="step" 
             :items="itemsCreate" 
@@ -408,17 +317,8 @@
                     {{ txError }}
                   </v-alert>
                   <h3 class="font-weight-bold mb-2">
-                    Token denom  
-                    <v-tooltip>
-                      <template #activator="{ props }"> 
-                        <v-icon
-                          v-bind="props"
-                          icon="mdi-help-box-multiple-outline"
-                        />
-                      </template>
-                      <span>By example, denom of HUAHUA token is <b>uhuahua</b><br> 
-                      </span>
-                    </v-tooltip>
+                    Token name
+ 
                   </h3>
                   <v-text-field
                     v-model="createTokenName" 
@@ -430,7 +330,8 @@
                   <v-btn
                     class="mt-4"
                     :color="cosmosConfig[store.chain].color" 
-                    :disabled="!formCreateToken"
+                    :disabled="!formCreateToken" 
+                    :loading="loading"
                     size="large"
                     block
                     @click="createToken()"
@@ -473,7 +374,7 @@
                   variant="outlined" 
                 />  
                 <h3 class="font-weight-bold mb-2">
-                  Ticker symbole
+                  Ticker symbol
                   <v-tooltip>
                     <template #activator="{ props }"> 
                       <v-icon
@@ -522,6 +423,7 @@
                   class="mt-4"
                   :color="cosmosConfig[store.chain].color"
                   size="large"
+                  :loading="loading"
                   block
                   @click="editToken()"
                 >
@@ -565,6 +467,7 @@
                   :color="cosmosConfig[store.chain].color"
                   size="large"
                   block
+                  :loading="loading"
                   @click="mintToken()"
                 >
                   Mint your token
@@ -682,7 +585,13 @@
                 <!-- <v-chip class="mb-4">
                 All validators
               </v-chip> -->
- 
+              <v-file-input
+    show-size
+    counter
+    multiple
+    variant="outlined"
+    label="File input"
+  ></v-file-input>
                 <v-textarea
                   v-model="addressToSend"
                   label="Address (one address by line)"
@@ -778,6 +687,7 @@
             <v-btn
               :color="cosmosConfig[store.chain].color"
               :disabled="!formBurnToken"
+              :loading="loading"
               size="large"
               class="mt-4"
               block 
@@ -871,6 +781,7 @@
             <v-btn
               :color="cosmosConfig[store.chain].color"
               :disabled="!formBurnToken"
+              :loading="loading"
               size="large"
               class="mt-4"
               block 
@@ -996,6 +907,7 @@
             <v-btn
               class="mt-4"
               :color="cosmosConfig[store.chain].color"
+              :loading="loading"
               size="large"
               block
               @click="editToken()"
@@ -1026,7 +938,7 @@
         </template>
 
         <v-toolbar-title class="text-h6">
-          Burn token
+          Mint your token
         </v-toolbar-title>
 
         <template #append>
@@ -1078,6 +990,7 @@
               :color="cosmosConfig[store.chain].color"
               size="large"
               :disabled="!formMintToken"
+              :loading="loading"
               block
               @click="mintToken()"
             >
@@ -1091,7 +1004,6 @@
 </template>
  
 <script>
-  import axios from "axios";
   import { useAppStore } from '@/stores/app'
   import cosmosConfig from '@/cosmos.config'
   import { defaultRegistryTypes, calculateFee, GasPrice } from "@cosmjs/stargate";
@@ -1108,7 +1020,6 @@ import FeePayer from "@/components/feePayer.vue";
  
 function checkBech32Address(address) {
   try {
-    console.log('test', address);
     bech32.decode(address);
     return true;
   } catch (error) {
@@ -1119,8 +1030,6 @@ function checkBech32Address(address) {
 function checkBech32Prefix(address, chainId) {
   try {
     const { prefix } = bech32.decode(address);
-    console.log('prefix', prefix);
-    console.log('prefix2', chainId);
     if (prefix === chainId) {
       return true;
     }
@@ -1144,6 +1053,7 @@ function checkBech32Prefix(address, chainId) {
       return {
         millify: millify,
         cosmosConfig: cosmosConfig,
+        finalTokenFatory: '',
         itemsPerPage: 4,
         userTokens: [],
         dialog: false,
@@ -1167,6 +1077,7 @@ function checkBech32Prefix(address, chainId) {
         txError: '',
         isLoaded: false,
         authorised: false,
+        displayOnlyAdmin: false,
         
 
         createTokenName: '',
@@ -1185,6 +1096,7 @@ function checkBech32Prefix(address, chainId) {
         amountToSend: '',
         addressToSend: '',
         amountToMint: '',
+        loading: false,
 
         search: '',
         headers: [
@@ -1192,13 +1104,14 @@ function checkBech32Prefix(address, chainId) {
             align: 'start',
             key: 'symbol',
             sortable: true,
-            title: 'Token name',
+            title: 'Ticker',
           },
+          { key: 'display', title: 'Token name' },
           { key: 'myToken', title: 'My token' },
           { key: 'supply', title: 'Supply' }, 
           { key: 'actions', title: 'Actions' }, 
         ],
-        
+ 
       }
     }, 
     watch: {
@@ -1233,15 +1146,20 @@ function checkBech32Prefix(address, chainId) {
       },
     },
     async beforeMount () { 
-      if (this.store.addrWallet === 'chihuahua1jshrvktsme0vh5z8kx6d8hgp7kp62zpxh3t2ld' || this.store.addrWallet === 'chihuahua13jawsn574rf3f0u5rhu7e8n6sayx5gkw3eddhp') {
+      if (
+        this.store.addrWallet === 'chihuahua1jshrvktsme0vh5z8kx6d8hgp7kp62zpxh3t2ld' || 
+        this.store.addrWallet === 'chihuahua1skeqnjwmjpv50n5lak2kzj6ujz59gu4m7z545j' || 
+        this.store.addrWallet === 'chihuahua13jawsn574rf3f0u5rhu7e8n6sayx5gkw3eddhp'
+      ) {
         this.authorised = true
       }
       await this.store.getTokenFactory()
+      this.finalTokenFatory = this.store.userTokensFactory
       this.isLoaded = true
     },
     methods: {
       async createToken () {
-        
+        this.loading = true
         let signer = await selectSigner(this.store.chain, this.store.loggedType)
         
         const foundMsgType = osmosis.tokenfactory.v1beta1.registry.find(
@@ -1283,6 +1201,7 @@ function checkBech32Prefix(address, chainId) {
         } catch (error) {
           console.error(error); 
           this.txError = error
+          this.loading = false
           return
         }
 
@@ -1294,13 +1213,16 @@ function checkBech32Prefix(address, chainId) {
           this.txError = ''
 
           await this.store.getTokenFactory()
-
+          this.finalTokenFatory = this.store.userTokensFactory
+          this.loading = false
         } catch (error) {
           console.error(error); 
           this.txError = error
+          this.loading = false
         }
       },
       async editToken () {
+        this.loading = true
         let signer = await selectSigner(this.store.chain, this.store.loggedType)      
 
         const foundMsgType = osmosis.tokenfactory.v1beta1.registry.find(
@@ -1359,6 +1281,7 @@ function checkBech32Prefix(address, chainId) {
         } catch (error) {
           console.error(error); 
           this.txError = error
+          this.loading = false
           return
         }
 
@@ -1371,14 +1294,18 @@ function checkBech32Prefix(address, chainId) {
           this.mintBase = this.finalFactoryDenom
 
           await this.store.getTokenFactory()
+          this.finalTokenFatory = this.store.userTokensFactory
           this.dialogEditToken = false
+          this.loading = false
         } catch (error) {
           console.error(error); 
           this.txError = error
+          this.loading = false
         }
       },
       async mintToken () {
         this.txError = ''
+        this.loading = true
         let signer = await selectSigner(this.store.chain, this.store.loggedType)
         const foundMsgType = osmosis.tokenfactory.v1beta1.registry.find(
           (element) =>
@@ -1386,7 +1313,7 @@ function checkBech32Prefix(address, chainId) {
               "/osmosis.tokenfactory.v1beta1.MsgMint"
         );   
 
-        const amountToMint = coin(this.amountToMint * Number("1e" + this.denomSelected.denom_units[1]?.exponent), this.mintBase);
+        const amountToMint = coin(this.amountToMint * Number("1e" + this.denomSelected.denom_units[1]?.exponent), this.finalFactoryDenom);
 
         const finalMsg = {
         typeUrl: foundMsgType[0],
@@ -1423,6 +1350,7 @@ function checkBech32Prefix(address, chainId) {
         } catch (error) {
           console.error(error); 
           this.txError = error
+          this.loading = false
           return
         }
         try {
@@ -1431,13 +1359,19 @@ function checkBech32Prefix(address, chainId) {
           this.txError = ''
           console.log(finalMsg)
           await this.store.getTokenFactory()
+          this.finalTokenFatory = this.store.userTokensFactory
+          this.dialogMintToken = false
+          this.dialogCreate = false
+          this.loading = false
 
         } catch (error) {
           console.error(error); 
           this.txError = error
+          this.loading = false
         }
       },
       async burnToken () {
+        this.loading = true
         this.txError = ''
         let signer = await selectSigner(this.store.chain, this.store.loggedType)
         const foundMsgType = osmosis.tokenfactory.v1beta1.registry.find(
@@ -1482,6 +1416,7 @@ function checkBech32Prefix(address, chainId) {
         } catch (error) {
           console.error(error); 
           this.txError = error
+          this.loading = false
           return
         }
         try {
@@ -1490,15 +1425,19 @@ function checkBech32Prefix(address, chainId) {
           this.txError = ''
           console.log(finalMsg)
           await this.store.getTokenFactory()
+          this.finalTokenFatory = this.store.userTokensFactory
           this.dialogBurn = false
+          this.loading = false
 
         } catch (error) {
           console.error(error); 
           this.txError = error
+          this.loading = false
         }
       },
       async sendToken () {
         this.txError = ''
+        this.loading = true
         let signer = await selectSigner(this.store.chain, this.store.loggedType)
         const foundMsgType = defaultRegistryTypes.find(
             (element) =>
@@ -1544,6 +1483,7 @@ function checkBech32Prefix(address, chainId) {
         } catch (error) {
           console.error(error); 
           this.txError = error
+          this.loading = false
           return
         }
         try {
@@ -1552,12 +1492,82 @@ function checkBech32Prefix(address, chainId) {
           this.txError = ''
           console.log(finalMsg)
           await this.store.getTokenFactory()
+          this.finalTokenFatory = this.store.userTokensFactory
           this.dialogSendToken = false
+          this.loading = false
 
         } catch (error) {
           console.error(error); 
           this.txError = error
+          this.loading = false
         }
+      }, 
+      async sendToken () {
+        this.txError = ''
+        this.loading = true
+        let signer = await selectSigner(this.store.chain, this.store.loggedType)
+        const foundMsgType = defaultRegistryTypes.find(
+            (element) =>
+              element[0] ===
+              "/cosmos.bank.v1beta1.MultiSend"
+          );  
+
+          const amount = coins((this.amountToSend ) * Number("1e" + this.denomSelected.denom_units[1]?.exponent), this.denomSelected.base);
+          const finalMsg = {
+          typeUrl: foundMsgType[0],
+            value: foundMsgType[1].fromPartial({
+              fromAddress: signer.accounts[0].address,
+              toAddress: this.addressToSendToken,
+              amount: amount,
+            }),
+          }
+        console.log(finalMsg)
+        
+        // Fee/Gas
+        let finalFee = {}
+        try {
+          const gasEstimation = await signer.client.simulate(
+            signer.accounts[0].address,
+            [finalMsg],
+            'Send token'
+          );
+          const usedFee = calculateFee(
+            Math.round(gasEstimation * cosmosConfig[this.store.chain].feeMultiplier),
+            GasPrice.fromString(
+              cosmosConfig[this.store.chain].gasPrice +
+                cosmosConfig[this.store.chain].coinLookup.chainDenom
+            )
+          );
+          this.gasFee = { fee: (usedFee.amount[0].amount / 1000000), gas: usedFee.gas };
+
+          const feeAmount = coins(usedFee.amount[0].amount, cosmosConfig[this.store.chain].coinLookup.chainDenom);
+          finalFee = {
+            amount: feeAmount,
+            gas: usedFee.gas,
+            granter: this.store.setFeePayer,
+            //granter: this.store.setFeePayer,
+          }
+        } catch (error) {
+          console.error(error); 
+          this.txError = error
+          this.loading = false
+          return
+        }
+        /* try {
+          const result = await signer.client.signAndBroadcast(signer.accounts[0].address, [finalMsg], finalFee, '') 
+          console.log(result)  
+          this.txError = ''
+          console.log(finalMsg)
+          await this.store.getTokenFactory()
+          this.finalTokenFatory = this.store.userTokensFactory
+          this.dialogSendToken = false
+          this.loading = false
+
+        } catch (error) {
+          console.error(error); 
+          this.txError = error
+          this.loading = false
+        } */
       }, 
       checkBech32Address (address) {
         try {
@@ -1611,6 +1621,7 @@ function checkBech32Prefix(address, chainId) {
         this.txError = ''
         this.mintBase = denom.base
         this.denomSelected = denom
+        this.finalFactoryDenom = denom.base
       },
       openDialogSendToken (denom) {
         this.denomSelected = ''
@@ -1620,6 +1631,36 @@ function checkBech32Prefix(address, chainId) {
         this.txError = ''
         this.denomSelected = denom
       },
+      onlyAdmin() {
+        console.log(this.displayOnlyAdmin)
+        if(!this.displayOnlyAdmin) {
+          this.finalTokenFatory = []
+          for (const [key, value] of Object.entries(this.store.userTokensFactory)) {
+            console.log(value.isAdmin)
+            if (value.isAdmin) {
+              this.finalTokenFatory.push(value)
+            }
+          }
+        } else {
+          this.finalTokenFatory = this.store.userTokensFactory
+        }
+      },
+
+      truncateString(
+        fullStr,
+        strLen = 8,
+        separator = "...",
+        frontChars = 16,
+        backChars = 8
+      ) {
+        if (fullStr.length <= strLen) return fullStr;
+
+        return (
+          fullStr.substr(0, frontChars) +
+          separator +
+          fullStr.substr(fullStr.length - backChars)
+        );
+      }
     },
   }
 </script>
