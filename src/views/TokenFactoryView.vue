@@ -1503,7 +1503,7 @@ function checkBech32Prefix(address, chainId) {
           this.loading = false
         }
       }, 
-      async sendToken () {
+      async sendTokenAirdrop () {
         this.txError = ''
         this.loading = true
         let signer = await selectSigner(this.store.chain, this.store.loggedType)
