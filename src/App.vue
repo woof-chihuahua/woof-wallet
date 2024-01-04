@@ -161,7 +161,7 @@
           justify="center"
           no-gutters
         >
-          v.1.0.8 (Beta)
+          v.1.0.9 (Beta)
           <v-icon
             color="#E6A147"
             class="ml-4 mr-4"
@@ -194,6 +194,7 @@
         <v-container class="mt-4">
           <v-row>
             <v-col
+              v-if="!mainPage"
               cols="12"
               md="1"
             />
@@ -201,7 +202,7 @@
             <v-col
               v-if="store.isLogged"
               cols="12"
-              md="10"
+              :md="mdPage"
             >
               <router-view />
             </v-col>
@@ -306,6 +307,7 @@
               </v-row>
             </v-col>
             <v-col
+              v-if="!mainPage"
               cols="12"
               md="1"
             />
@@ -335,13 +337,26 @@ export default {
     },
     data: () => ({
       cosmosConfig: cosmosConfig,
-      items: [
-        { title: 'Click Me' },
-        { title: 'Click Me' },
-        { title: 'Click Me' },
-        { title: 'Click Me 2' },
-      ], 
+      mainPage: false,
+      mdPage: 10,
     }),
+    watch: {
+      async $route(to, from) {
+        // console.log(to)
+        //console.log(from)
+        this.currentPage = to.name
+        if(
+          to.name === 'TokenFactory'
+        ) {
+          console.log(this.currentPage)
+          this.mainPage = true 
+          this.mdPage = 12
+        } else {
+          this.mainPage = false
+          this.mdPage = 10
+        }
+      }
+    },
     mounted() {
       if(!this.store.isLogged) {       
         const router = useRouter()
