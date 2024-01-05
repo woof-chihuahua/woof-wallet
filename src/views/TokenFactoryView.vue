@@ -1083,7 +1083,7 @@ function checkBech32Prefix(address, chainId) {
         createTokenName: '',
         finalFactoryDenom: '',
         gasFee: '',
-        step: 2,
+        step: 1,
         itemsCreate: ['Create token', 'Config token', 'Create supply'], 
         denomDescription: '',
         denomExponent: '6',
@@ -1146,6 +1146,7 @@ function checkBech32Prefix(address, chainId) {
       },
     },
     async beforeMount () { 
+      
       if (
         this.store.addrWallet === 'chihuahua1jshrvktsme0vh5z8kx6d8hgp7kp62zpxh3t2ld' || 
         this.store.addrWallet === 'chihuahua1skeqnjwmjpv50n5lak2kzj6ujz59gu4m7z545j' || 
@@ -1285,7 +1286,7 @@ function checkBech32Prefix(address, chainId) {
           this.txError = error
           this.loading = false
           return
-        }
+        } 
 
         
 
@@ -1315,7 +1316,13 @@ function checkBech32Prefix(address, chainId) {
               "/osmosis.tokenfactory.v1beta1.MsgMint"
         );   
 
-        const amountToMint = coin(this.amountToMint * Number("1e" + this.denomSelected.denom_units[1]?.exponent), this.finalFactoryDenom);
+        let finalexponent = ''
+        if (this.denomSelected !== '') {
+          finalexponent = this.denomSelected.denom_units[1]?.exponent
+        } else {
+          finalexponent = this.denomExponent
+        }
+        const amountToMint = coin(this.amountToMint * Number("1e" + finalexponent), this.finalFactoryDenom);
 
         const finalMsg = {
         typeUrl: foundMsgType[0],
