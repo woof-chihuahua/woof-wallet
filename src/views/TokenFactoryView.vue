@@ -585,13 +585,13 @@
                 <!-- <v-chip class="mb-4">
                 All validators
               </v-chip> -->
-              <v-file-input
+<!--               <v-file-input
     show-size
     counter
     multiple
     variant="outlined"
     label="File input"
-  ></v-file-input>
+  ></v-file-input> -->
                 <v-textarea
                   v-model="addressToSend"
                   label="Address (one address by line)"
@@ -730,67 +730,135 @@
         </template>
       </v-toolbar>
       <v-card>
-        <v-form 
-          ref="formSend"
-          v-model="formBurnToken"
-        > 
-          <v-card-text> 
-            <h3 class="font-weight-bold mb-2">
-              Amount to send
-              <v-tooltip>
-                <template #activator="{ props }"> 
-                  <v-icon
-                    v-bind="props"
-                    icon="mdi-help-box-multiple-outline"
+        <v-tabs
+          v-model="tabSend" 
+        >
+          <v-tab value="one">Simple send</v-tab>
+          <v-tab value="two">IBC send</v-tab> 
+        </v-tabs>
+
+        <v-card-text>
+          <v-window v-model="tabSend">
+            <v-window-item value="one">
+              <v-form 
+                ref="formSend"
+                v-model="formBurnToken"
+              > 
+ 
+                  <h3 class="font-weight-bold mb-2">
+                    Amount to send
+                    <v-tooltip>
+                      <template #activator="{ props }"> 
+                        <v-icon
+                          v-bind="props"
+                          icon="mdi-help-box-multiple-outline"
+                        />
+                      </template>
+                      <span>Amount to send<br> 
+                      </span>
+                    </v-tooltip>
+                  </h3>
+                  <v-text-field
+                    v-model="amountToSend"
+                    variant="outlined" 
+                    :rules="[
+                      v => !!v || 'Amount is required',
+                      v => v <= (denomSelected.myToken / Number('1e' + denomSelected.denom_units[1]?.exponent)) || 'You don\'t have enough tokens',
+                    ]"
+                  /> 
+                  <h3 class="font-weight-bold mb-2">
+                    Address to send
+                    <v-tooltip>
+                      <template #activator="{ props }"> 
+                        <v-icon
+                          v-bind="props"
+                          icon="mdi-help-box-multiple-outline"
+                        />
+                      </template>
+                      <span>Address to send<br> 
+                      </span>
+                    </v-tooltip>
+                  </h3>
+                  <v-text-field
+                    v-model="addressToSendToken"
+                    variant="outlined" 
+                    :rules="[
+                      v => !!v || 'Address is required',
+                      v => checkBech32Address(v) || 'Bad address!!',              
+                    ]"
                   />
+                  <FeePayer v-if="store.myFeeAllowances.length > 0" />
+                  <v-btn
+                    :color="cosmosConfig[store.chain].color"
+                    :disabled="!formBurnToken"
+                    :loading="loading"
+                    size="large"
+                    class="mt-4"
+                    block 
+                    @click="sendToken()"
+                  >
+                    Send
+                  </v-btn>  
+  
+              </v-form>
+            </v-window-item>
+
+            <v-window-item value="two">
+              <v-form 
+                ref="formSend"
+                v-model="formIbcSend"
+              > 
+              <v-select v-model="ibcSelectedChain" label="Select chain to send" :items="ibcChains" item-title="name" variant="outlined" class="mt-4">
+                <template v-slot:item="{ props, item }">
+                  <v-list-item v-bind="props" :subtitle="item.raw.department"></v-list-item>
                 </template>
-                <span>Amount to send<br> 
-                </span>
-              </v-tooltip>
-            </h3>
-            <v-text-field
-              v-model="amountToSend"
-              variant="outlined" 
-              :rules="[
-                v => !!v || 'Amount is required',
-                v => v <= (denomSelected.myToken / Number('1e' + denomSelected.denom_units[1]?.exponent)) || 'You don\'t have enough tokens',
-              ]"
-            /> 
-            <h3 class="font-weight-bold mb-2">
-              Address to send
-              <v-tooltip>
-                <template #activator="{ props }"> 
-                  <v-icon
-                    v-bind="props"
-                    icon="mdi-help-box-multiple-outline"
-                  />
-                </template>
-                <span>Address to send<br> 
-                </span>
-              </v-tooltip>
-            </h3>
-            <v-text-field
-              v-model="addressToSendToken"
-              variant="outlined" 
-              :rules="[
-                v => !!v || 'Address is required',
-                v => checkBech32Address(v) || 'Bad address!!',              
-              ]"
-            />
-            <FeePayer v-if="store.myFeeAllowances.length > 0" />
-            <v-btn
-              :color="cosmosConfig[store.chain].color"
-              :disabled="!formBurnToken"
-              :loading="loading"
-              size="large"
-              class="mt-4"
-              block 
-              @click="sendToken()"
-            >
-              Send
-            </v-btn>  
-          </v-card-text>    
-        </v-form>
+              </v-select>
+              <v-text-field
+                v-model="bech32Address"
+                label="You receiver address"
+                variant="outlined" 
+                disabled
+                :rules="[
+                  v => !!v || 'Chain IBC is required'            
+                ]"
+              />   
+              <v-text-field
+                v-model="amountToSend"
+                label="Amount to send"
+                variant="outlined"  
+                :rules="[
+                  v => !!v || 'Amount is required'            
+                ]"
+              >     
+              <template #append-inner>
+                <v-chip
+                  label
+                  small
+                  @click="getMax((denomSelected.myToken / Number('1e' + denomSelected.denom_units[1]?.exponent)))"
+                >
+                  Max
+                </v-chip>
+              </template>  
+              </v-text-field>     
+              <v-btn
+                :color="cosmosConfig[store.chain].color"
+                :disabled="!formIbcSend"
+                :loading="loading"
+                size="large"
+                class="mt-4"
+                block 
+                @click="sendIbcToken()"
+              >
+                Send IBC
+              </v-btn>  
+            </v-form>
+            </v-window-item> 
+          </v-window>
+        
+        </v-card-text>
+      </v-card>
+      <v-card>
+
       </v-card>
     </v-dialog>
     <v-dialog
@@ -1006,7 +1074,7 @@
 <script>
   import { useAppStore } from '@/stores/app'
   import cosmosConfig from '@/cosmos.config'
-  import { defaultRegistryTypes, calculateFee, GasPrice } from "@cosmjs/stargate";
+  import { defaultRegistryTypes, calculateFee, GasPrice, MsgTransferEncodeObject } from "@cosmjs/stargate";
   import { osmosis } from 'osmojs';
   import { selectSigner, calculFee } from "@/libs/signer";
   import {
@@ -1014,8 +1082,11 @@
   coins,
 } from "@cosmjs/proto-signing";
 import millify from "millify";
-import {bech32} from "bech32";
+import { bech32 } from "bech32";
+import Long from "long"; 
+import axios from "axios";
 
+import { MsgTransfer } from "cosmjs-types/ibc/applications/transfer/v1/tx.js";
 import FeePayer from "@/components/feePayer.vue";
  
 function checkBech32Address(address) {
@@ -1078,6 +1149,8 @@ function checkBech32Prefix(address, chainId) {
         isLoaded: false,
         authorised: false,
         displayOnlyAdmin: false,
+        tabSend: null,
+        formIbcSend: false,
         
 
         createTokenName: '',
@@ -1111,10 +1184,44 @@ function checkBech32Prefix(address, chainId) {
           { key: 'supply', title: 'Supply' }, 
           { key: 'actions', title: 'Actions' }, 
         ],
+        ibcSelectedChain: '',
+        bech32Address: '',
+        ibcChains: [
+          {
+            name: 'OSMOSIS',
+            department: 'channel-7',
+            prefix: 'osmo',
+          },
+          {
+            name: 'OMNIFLIX',
+            department: 'channel-17',
+            prefix: 'flix',
+          },
+          {
+            name: 'JUNO',
+            department: 'channel-11',
+            prefix: 'juno',
+          },
+          {
+            name: 'STAFI',
+            department: 'channel-25',
+            prefix: 'stafi',
+          }
+        ],
  
       }
     }, 
     watch: {
+      ibcSelectedChain (val) {
+        let decodeAddress = bech32.decode(this.store.addrWallet);
+        
+        let findIbc = this.ibcChains.find(x => x.name === val)
+        console.log(findIbc)
+        const ibcToSend = bech32.encode(findIbc.prefix, decodeAddress.words)  
+
+        this.bech32Address = ibcToSend
+      },
+ 
       addressToSend (val) {
         //console.log(val.toString().split(/(?:\r\n|\r|\n)/g))
         this.finalAddressToSend = val.toString().split(/(?:\r\n|\r|\n)/g)
@@ -1578,6 +1685,66 @@ function checkBech32Prefix(address, chainId) {
           this.loading = false
         } */
       }, 
+      async sendIbcToken () {
+        console.log(this.ibcSelectedChain)
+        console.log(this.bech32Address)
+        console.log(this.amountToSend)
+
+
+          const foundMsgType = defaultRegistryTypes.find(
+            (element) =>
+              element[0] ===
+              "/ibc.applications.transfer.v1.MsgTransfer"
+          );
+
+          console.log(foundMsgType)
+
+        let getIbcHeight = await axios.get('https://api.chihuahua.wtf/ibc/core/channel/v1/channels/channel-7/ports/transfer/client_state') 
+        let finalHeight = getIbcHeight.data.identified_client_state.client_state.latest_height.revision_height;
+        console.log(finalHeight)
+
+        this.txError = ''
+        this.loading = true
+        let signer = await selectSigner(this.store.chain, this.store.loggedType)
+
+
+        const finalMsg = {
+          typeUrl: foundMsgType[0],
+            value: foundMsgType[1].fromPartial({
+              sourcePort: 'transfer',
+              sourceChannel: 'channel-7',
+              sender: 'chihuahua13jawsn574rf3f0u5rhu7e8n6sayx5gkw3eddhp',
+              receiver: 'osmo13jawsn574rf3f0u5rhu7e8n6sayx5gkw6hnnq3',
+              token: coin((this.amountToSend ) , "factory/chihuahua13jawsn574rf3f0u5rhu7e8n6sayx5gkw3eddhp/uwoof"),
+              timeoutHeight: { revisionHeight: Long.fromNumber(finalHeight + 420), revisionNumber: Long.fromNumber(1) },
+              //timeoutTimestamp: Number(Math.floor(Date.now() / 1000) + 60),
+            }),
+          }  
+ 
+        console.log(finalMsg)
+        
+        // Fee/Gas
+        let finalFee = {}
+ 
+        try {
+          const result = await signer.client.signAndBroadcast(signer.accounts[0].address, [finalMsg], 'auto', 'test') 
+          console.log(result)  
+          this.txError = ''
+          console.log(finalMsg)
+          await this.store.getTokenFactory()
+          this.finalTokenFatory = this.store.userTokensFactory
+          this.dialogSendToken = false
+          this.loading = false
+
+        } catch (error) {
+          console.error(error); 
+          this.txError = error
+          this.loading = false
+        }
+
+
+
+      },
       checkBech32Address (address) {
         try {
           bech32.decode(address);
@@ -1589,6 +1756,7 @@ function checkBech32Prefix(address, chainId) {
       },
       getMax(amount) {
         this.amountToBurn = amount 
+        this.amountToSend = amount
       },
       openDialog (amount, chainDenom) {
         this.dialog = true
