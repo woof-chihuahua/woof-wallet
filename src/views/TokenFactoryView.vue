@@ -1265,6 +1265,7 @@ function checkBech32Prefix(address, chainId) {
         this.store.addrWallet === 'chihuahua1md9zaw7gpnrfl2swql6hjvgttjuf6cvkqlsuwy' ||   
         this.store.addrWallet === 'chihuahua1x4q2vkrz4dfgd9hcw0p5m2f2nuv2uqmt9xr8k2' ||
         this.store.addrWallet === 'chihuahua10z6sfeeqd3hfthhxc58le30q93zy4n034lg73r' ||
+        this.store.addrWallet === 'chihuahua1he5parj9j4sp5e9tjdycugvcg3zqzpmhaly6hz' ||
         this.store.addrWallet === 'chihuahua14p5zgk8muuk486ghdh9jg8p0a8xgvzhh393mw4'
       ) {
         this.authorised = true
