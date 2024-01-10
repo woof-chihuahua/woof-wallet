@@ -5,9 +5,10 @@ import {
   SigningStargateClientOptions,
   GasPrice,
   calculateFee,
+  AminoTypes
 } from "@cosmjs/stargate";
 import { Registry } from "@cosmjs/proto-signing";
-import { osmosisProtoRegistry } from 'osmojs';
+import { osmosisProtoRegistry, osmosisAminoConverters } from 'osmojs';
 import cosmosConfig from '../cosmos.config'
 
 import { MsgExecLegacyContent } from "cosmjs-types/cosmos/gov/v1/tx"; 
@@ -45,8 +46,14 @@ export async function selectSigner(chain, type) {
   let chainId = cosmosConfig[chain].chainId;
   if (type === 'keplr') {
     // Keplr connect
+    const aminoConverters = {
+      ...osmosisAminoConverters
+   };
+
 
     const registry = new Registry([...osmosisProtoRegistry, ...defaultRegistryTypes]);
+    const aminoTypes = new AminoTypes(aminoConverters);
+
 
     await window.keplr.enable(chainId);
     const offlineSigner = await window.getOfflineSignerAuto(chainId);
@@ -61,7 +68,8 @@ export async function selectSigner(chain, type) {
           cosmosConfig[chain].gasPrice +
             cosmosConfig[chain].coinLookup.chainDenom
         ),
-        registry: registry
+        registry: registry,
+        aminoTypes
       }
     );
   } else if (type === 'cosmostation') {
