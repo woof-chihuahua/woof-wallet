@@ -15,25 +15,6 @@
   </h1>  
 
   <v-card
-    v-if="!authorised"
-    flat
-    title="All tokens factory"
-    class="mb-12"
-  >
-    <template #text>
-      <v-alert
-        variant="outlined"
-        type="warning"
-        prominent
-        class="mb-4"
-        border="top"
-      >
-        You are not authorized to view this page
-      </v-alert>
-    </template>
-  </v-card>
-  <v-card
-    v-if="authorised"
     flat
     title="All tokens factory"
     class="mb-12"
@@ -1254,22 +1235,6 @@ function checkBech32Prefix(address, chainId) {
       },
     },
     async beforeMount () { 
-      
-      if (
-        this.store.addrWallet === 'chihuahua1jshrvktsme0vh5z8kx6d8hgp7kp62zpxh3t2ld' || 
-        this.store.addrWallet === 'chihuahua1skeqnjwmjpv50n5lak2kzj6ujz59gu4m7z545j' || 
-        this.store.addrWallet === 'chihuahua13jawsn574rf3f0u5rhu7e8n6sayx5gkw3eddhp' ||
-        this.store.addrWallet === 'chihuahua1dtknkwg2wknp99v5w6jhsa8s6equ838hpc5gre' ||  
-        this.store.addrWallet === 'chihuahua1cm8u5cyrf0k6mlt5dhqlsnje7wr58k5uyx29h2' ||    
-        this.store.addrWallet === 'chihuahua1kevhl78wsaddl8tw63a05ptlaq9x5glgjda00d' || 
-        this.store.addrWallet === 'chihuahua1md9zaw7gpnrfl2swql6hjvgttjuf6cvkqlsuwy' ||   
-        this.store.addrWallet === 'chihuahua1x4q2vkrz4dfgd9hcw0p5m2f2nuv2uqmt9xr8k2' ||
-        this.store.addrWallet === 'chihuahua10z6sfeeqd3hfthhxc58le30q93zy4n034lg73r' ||
-        this.store.addrWallet === 'chihuahua1he5parj9j4sp5e9tjdycugvcg3zqzpmhaly6hz' ||
-        this.store.addrWallet === 'chihuahua14p5zgk8muuk486ghdh9jg8p0a8xgvzhh393mw4'
-      ) {
-        this.authorised = true
-      }
       await this.store.getTokenFactory()
       this.finalTokenFatory = this.store.userTokensFactory
       this.isLoaded = true
