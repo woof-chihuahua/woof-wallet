@@ -1,6 +1,5 @@
 <template>
   <h1
-    v-if="authorised"
     class="text-h4 font-weight-bold d-flex justify-space-between mb-4 align-center"
   >
     <div class="text-truncate">
