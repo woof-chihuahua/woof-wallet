@@ -714,7 +714,7 @@
           v-model="tabSend" 
         >
           <v-tab value="one">Simple send</v-tab>
-          <v-tab value="two">IBC send</v-tab> 
+          <!-- <v-tab value="two">IBC send</v-tab>  -->
         </v-tabs>
 
         <v-card-text>
@@ -820,7 +820,7 @@
                 </v-chip>
               </template>  
               </v-text-field>     
-              <v-btn
+             <!--  <v-btn
                 :color="cosmosConfig[store.chain].color"
                 :disabled="!formIbcSend"
                 :loading="loading"
@@ -829,6 +829,16 @@
                 block 
                 disabled
                 @click="sendIbcToken()"
+              >
+                Soon
+              </v-btn>   -->
+              <v-btn
+                :color="cosmosConfig[store.chain].color"
+                size="large"
+                class="mt-4"
+                block 
+                disabled
+
               >
                 Soon
               </v-btn>  
