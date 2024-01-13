@@ -5,10 +5,17 @@ import {
   SigningStargateClientOptions,
   GasPrice,
   calculateFee,
-  AminoTypes
+  AminoTypes,
+  createBankAminoConverters
 } from "@cosmjs/stargate";
 import { Registry } from "@cosmjs/proto-signing";
-import { osmosisProtoRegistry, osmosisAminoConverters } from 'osmojs';
+import { 
+  osmosisProtoRegistry, 
+  osmosisAminoConverters, 
+  cosmosAminoConverters, 
+  cosmwasmAminoConverters, 
+  ibcAminoConverters 
+} from 'osmojs';
 import cosmosConfig from '../cosmos.config'
 
 import { MsgExecLegacyContent } from "cosmjs-types/cosmos/gov/v1/tx"; 
@@ -47,9 +54,11 @@ export async function selectSigner(chain, type) {
   if (type === 'keplr') {
     // Keplr connect
     const aminoConverters = {
-      ...osmosisAminoConverters
-   };
-
+      ...osmosisAminoConverters,
+      ...cosmosAminoConverters,
+      ...cosmwasmAminoConverters,
+      ...ibcAminoConverters,
+    };
 
     const registry = new Registry([...osmosisProtoRegistry, ...defaultRegistryTypes]);
     const aminoTypes = new AminoTypes(aminoConverters);
