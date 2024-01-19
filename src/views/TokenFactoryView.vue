@@ -40,6 +40,14 @@
       :search="search"
     > 
       <template #item.symbol="{ item }"> 
+        <v-avatar>
+          <v-img
+            v-if="item.logo !== ''"
+            :src="item.logo"
+            alt="John"
+          ></v-img>
+          <v-icon v-else size="x-large" icon="mdi-hand-coin"></v-icon> 
+        </v-avatar>
          {{ item.symbol }}
       </template> 
       <template #item.display="{ item }"> 
@@ -714,7 +722,7 @@
           v-model="tabSend" 
         >
           <v-tab value="one">Simple send</v-tab>
-          <!-- <v-tab value="two">IBC send</v-tab>  -->
+        <v-tab value="two">IBC send</v-tab>
         </v-tabs>
 
         <v-card-text>
@@ -766,14 +774,15 @@
                       v => !!v || 'Address is required',
                       v => checkBech32Address(v) || 'Bad address!!',              
                     ]"
-                  />
+                  > 
+                  </v-text-field>
                   <FeePayer v-if="store.myFeeAllowances.length > 0" />
                   <v-btn
                     :color="cosmosConfig[store.chain].color"
                     :disabled="!formBurnToken"
                     :loading="loading"
                     size="large"
-                    class="mt-4"
+                    class="mt-4 mb-4"
                     block 
                     @click="sendToken()"
                   >
@@ -792,6 +801,14 @@
                 <template v-slot:item="{ props, item }">
                   <v-list-item v-bind="props" :subtitle="item.raw.department"></v-list-item>
                 </template>
+                <template #prepend-inner>
+                <v-img 
+                  height="24"
+                  width="24"
+                  :src="ibcChains[0].icon"
+                  alt=""
+                ></v-img>
+              </template> 
               </v-select>
               <v-text-field
                 v-model="bech32Address"
@@ -801,7 +818,38 @@
                 :rules="[
                   v => !!v || 'Chain IBC is required'            
                 ]"
-              />   
+              >
+              <template #prepend-inner>
+                <v-img 
+                  height="24"
+                  width="24"
+                  :src="ibcChains[0].icon"
+                  alt=""
+                ></v-img>
+              </template>            
+              </v-text-field>   
+              <div class="mb-2 text-right">
+                  <v-chip
+                    label
+                    class="mr-2"
+                    @click="getQuarter((denomSelected.myToken / Number('1e' + denomSelected.denom_units[1]?.exponent)))"
+                  >
+                  1/4
+                  </v-chip>
+                  <v-chip
+                    label
+                    class="mr-2"
+                    @click="getHalf((denomSelected.myToken / Number('1e' + denomSelected.denom_units[1]?.exponent)))"
+                  >
+                  1/2
+                  </v-chip>
+                  <v-chip
+                    label
+                    @click="getMax((denomSelected.myToken / Number('1e' + denomSelected.denom_units[1]?.exponent)))"
+                  >
+                  Max
+                  </v-chip> 
+              </div>
               <v-text-field
                 v-model="amountToSend"
                 label="Amount to send"
@@ -810,38 +858,44 @@
                   v => !!v || 'Amount is required'            
                 ]"
               >     
+              <template #prepend-inner>
+                <v-img 
+                  v-if="denomSelected.logo !== ''"
+                  height="24"
+                  width="24"
+                  :src="denomSelected.logo"
+                  alt=""
+                ></v-img>
+              </template>
+                
               <template #append-inner>
                 <v-chip
                   label
-                  small
-                  @click="getMax((denomSelected.myToken / Number('1e' + denomSelected.denom_units[1]?.exponent)))"
+                  small 
                 >
-                  Max
+                {{ denomSelected.denom_units[1]?.denom  }}
                 </v-chip>
+                
               </template>  
               </v-text-field>     
-             <!--  <v-btn
+              <v-btn
                 :color="cosmosConfig[store.chain].color"
                 :disabled="!formIbcSend"
                 :loading="loading"
                 size="large"
-                class="mt-4"
+                class="mt-4 mb-4"
                 block 
                 disabled
                 @click="sendIbcToken()"
               >
-                Soon
-              </v-btn>   -->
-              <v-btn
-                :color="cosmosConfig[store.chain].color"
-                size="large"
-                class="mt-4"
-                block 
-                disabled
-
-              >
-                Soon
-              </v-btn>  
+                Send to {{ ibcSelectedChain }}
+                <!-- <v-img 
+                  height="24"
+                  width="24"
+                  :src="ibcChains[0].icon"
+                  alt=""
+                ></v-img>  -->
+              </v-btn>   
             </v-form>
             </v-window-item> 
           </v-window>
@@ -1182,7 +1236,8 @@ function checkBech32Prefix(address, chainId) {
             name: 'OSMOSIS',
             department: 'channel-7',
             prefix: 'osmo',
-          },
+            icon: 'https://assets.coingecko.com/coins/images/16724/standard/osmo.png',
+          }/* ,
           {
             name: 'OMNIFLIX',
             department: 'channel-17',
@@ -1197,7 +1252,7 @@ function checkBech32Prefix(address, chainId) {
             name: 'STAFI',
             department: 'channel-25',
             prefix: 'stafi',
-          }
+          } */
         ],
  
       }
@@ -1670,16 +1725,13 @@ function checkBech32Prefix(address, chainId) {
         console.log(this.ibcSelectedChain)
         console.log(this.bech32Address)
         console.log(this.amountToSend)
-
-
-          const foundMsgType = defaultRegistryTypes.find(
-            (element) =>
-              element[0] ===
-              "/ibc.applications.transfer.v1.MsgTransfer"
-          );
-
-          console.log(foundMsgType)
-
+        console.log(this.denomSelected)     
+        const foundMsgType = defaultRegistryTypes.find(
+          (element) =>
+            element[0] ===
+            "/ibc.applications.transfer.v1.MsgTransfer"
+        );
+        console.log(foundMsgType)
         let getIbcHeight = await axios.get('https://api.chihuahua.wtf/ibc/core/channel/v1/channels/channel-7/ports/transfer/client_state') 
         let finalHeight = getIbcHeight.data.identified_client_state.client_state.latest_height.revision_height;
         console.log(finalHeight)
@@ -1688,15 +1740,15 @@ function checkBech32Prefix(address, chainId) {
         this.loading = true
         let signer = await selectSigner(this.store.chain, this.store.loggedType)
 
-
+        const amount = coin((this.amountToSend) * Number("1e" + this.denomSelected.denom_units[1]?.exponent), this.denomSelected.base);
         const finalMsg = {
           typeUrl: foundMsgType[0],
             value: foundMsgType[1].fromPartial({
               sourcePort: 'transfer',
               sourceChannel: 'channel-7',
-              sender: 'chihuahua13jawsn574rf3f0u5rhu7e8n6sayx5gkw3eddhp',
-              receiver: 'osmo13jawsn574rf3f0u5rhu7e8n6sayx5gkw6hnnq3',
-              token: coin((this.amountToSend ) , "factory/chihuahua13jawsn574rf3f0u5rhu7e8n6sayx5gkw3eddhp/uwoof"),
+              sender: signer.accounts[0].address,
+              receiver: this.bech32Address,
+              token: amount,
               timeoutHeight: { revisionHeight: Long.fromNumber(finalHeight + 420), revisionNumber: Long.fromNumber(1) },
               //timeoutTimestamp: Number(Math.floor(Date.now() / 1000) + 60),
             }),
@@ -1734,10 +1786,18 @@ function checkBech32Prefix(address, chainId) {
           console.log(error);
           return false;
         }
-      },
+      }, 
       getMax(amount) {
-        this.amountToBurn = amount 
-        this.amountToSend = amount
+        this.amountToBurn = (amount).toFixed(2)
+        this.amountToSend = (amount).toFixed(2)
+      },
+      getQuarter(amount) {
+        this.amountToBurn = (amount / 4).toFixed(2)
+        this.amountToSend = (amount / 4).toFixed(2)
+      },
+      getHalf(amount) {
+        this.amountToBurn = (amount / 2).toFixed(2)
+        this.amountToSend = (amount / 2).toFixed(2)
       },
       openDialog (amount, chainDenom) {
         this.dialog = true
