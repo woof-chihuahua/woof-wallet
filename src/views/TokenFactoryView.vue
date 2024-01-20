@@ -870,14 +870,14 @@
                 
               <template #append-inner>
                 <v-chip
-                  label
-                  small 
+                  label 
                 >
                 {{ denomSelected.denom_units[1]?.denom  }}
                 </v-chip>
                 
               </template>  
-              </v-text-field>     
+              </v-text-field>    
+              <FeePayer v-if="store.myFeeAllowances.length > 0" /> 
               <v-btn
                 :color="cosmosConfig[store.chain].color"
                 :disabled="!formIbcSend"
@@ -903,7 +903,71 @@
         </v-card-text>
       </v-card>
       <v-card>
+      </v-card>
+    </v-dialog>
+    <v-dialog
+      v-model="dialogReturnIbc"
+      width="500"
+    >
+      <v-toolbar
+        :color="cosmosConfig[store.chain].color"
+        theme="dark" 
+      >
+        <template #prepend>
+          <v-avatar>
+            <v-img
+              max-width="32"
+              max-height="32"
+              :src="cosmosConfig[store.chain].coinLookup.icon"
+              alt="huahua"
+            />
+          </v-avatar>
+        </template>
 
+        <v-toolbar-title class="text-h6">
+          Detail transaction
+        </v-toolbar-title>
+
+        <template #append>
+          <v-btn
+            icon="mdi-close"
+            @click="dialogReturnIbc = false"
+          />
+        </template>
+      </v-toolbar>
+      <v-card>
+        <v-card-text>
+          <div class="ma-8 text-center">
+          <v-icon
+            size="150"
+            color="green darken-2"
+            prepend-icon="mdi-check-circle"
+            
+          >
+            mdi-check-circle-outline
+          </v-icon>
+        </div>
+          <v-table> 
+            <tbody>
+              <tr>
+                <td>Tx hash</td>
+                <td>{{ truncateString(txResult.transactionHash) }}</td>
+              </tr>
+              <tr>
+                <td>View on mintscan</td>
+                <td> 
+                  <v-btn 
+                    text 
+                    prepend-icon="mdi-open-in-new" 
+                    target="_blank"
+                    :href="'https://www.mintscan.io/chihuahua/tx/' + txResult.transactionHash"
+                  > Open detail
+                  </v-btn>
+                </td>
+              </tr>
+            </tbody>
+          </v-table>
+        </v-card-text>
       </v-card>
     </v-dialog>
     <v-dialog
@@ -1178,6 +1242,7 @@ function checkBech32Prefix(address, chainId) {
         dialogSendToken: false,
         dialogEditToken: false,
         dialogMintToken: false,
+        dialogReturnIbc: false,
         slider2: 0,
         totalCanBeSend: 0,
         totalToSend: 0,
@@ -1215,6 +1280,7 @@ function checkBech32Prefix(address, chainId) {
         addressToSend: '',
         amountToMint: '',
         loading: false,
+        txResult: '',
 
         search: '',
         headers: [
@@ -1755,9 +1821,6 @@ function checkBech32Prefix(address, chainId) {
           }  
  
         console.log(finalMsg)
-        
-        // Fee/Gas
-        let finalFee = {}
  
         try {
           const result = await signer.client.signAndBroadcast(signer.accounts[0].address, [finalMsg], 'auto', 'test') 
@@ -1768,7 +1831,8 @@ function checkBech32Prefix(address, chainId) {
           this.finalTokenFatory = this.store.userTokensFactory
           this.dialogSendToken = false
           this.loading = false
-
+          this.txResult = result
+          this.dialogReturnIbc = true
         } catch (error) {
           console.error(error); 
           this.txError = error
