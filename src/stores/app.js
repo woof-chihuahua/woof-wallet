@@ -332,7 +332,7 @@ export const useAppStore = defineStore('data', {
     },  
     async getTokenFactory() {
       const getAllTokens = await axios(
-        "https://api.chihuahua.wtf/cosmos/bank/v1beta1/denoms_metadata"  
+        "https://api.chihuahua.wtf/cosmos/bank/v1beta1/denoms_metadata?pagination.limit=300"  
       );       
       const getUserTokens = await axios(
         "https://api.chihuahua.wtf/osmosis/tokenfactory/v1beta1/denoms_from_creator/" + this.addrWallet
@@ -343,7 +343,10 @@ export const useAppStore = defineStore('data', {
       const getAllSupply = await axios(
         "https://api.chihuahua.wtf/cosmos/bank/v1beta1/supply"
       );
-
+      const getChainRegistryAsset = await axios(
+        "https://raw.githubusercontent.com/cosmos/chain-registry/master/chihuahua/assetlist.json"
+      );
+      
       // Join getAllTokens and getUserTokens
       const allTokens = getAllTokens.data.metadatas.map((item) => {
         const userToken = getUserTokens.data.denoms.find(
@@ -357,11 +360,13 @@ export const useAppStore = defineStore('data', {
       // Create for from userToken to get the supply
       for (const [key, value] of Object.entries(allTokens)) {
           let detailToken = value
+ 
 
           const foundSupply = getAllSupply.data.supply.find((element) => element.denom === detailToken.base);
           const foundAmountToken = getUserSupply.data.balances.find((element) => element.denom === detailToken.base);
           // const foundTokenMetadata = getAllTokens.data.metadatas.find((element) => element.base === detailToken.base); 
           const foundMyToken = getUserTokens.data.denoms.find((element) => element === detailToken.base); 
+          const foundAsset = getChainRegistryAsset.data.assets.find((element) => element.base === detailToken.base); 
 
           if(typeof foundSupply !== 'undefined') {
             allTokens[key].supply = foundSupply.amount;
@@ -381,8 +386,14 @@ export const useAppStore = defineStore('data', {
             allTokens[key].isAdmin = false;
           }
 
+          if(typeof foundAsset !== 'undefined') {
+            allTokens[key].logo = foundAsset.logo_URIs.png;
+          } else {
+            allTokens[key].logo = '';
+          }
           
-        }      
+        }    
+        console.log(allTokens)  
       this.userTokensFactory = allTokens;  
     },
     logout() {
