@@ -104,7 +104,15 @@
                 label
               >
                 REJECTED
-              </v-chip>             
+              </v-chip>     
+              <v-chip
+                v-if="item.raw.status == 5"
+                color="red"
+                class="ma-2"
+                label
+              >
+                FAILED
+              </v-chip>         
               <v-table
                 density="compact"
                 class="text-caption"

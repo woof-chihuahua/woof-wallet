@@ -145,10 +145,15 @@ export const useAppStore = defineStore('data', {
       this.totalCommunityPool = Number(foundCommunityPool.amount / 1000000000000000000000000).toFixed(6)
     }, 
     async getGovModule() {    
-      const queryGov = new gov.QueryClientImpl(this.rpcClient);
-      
-
+      const queryGov = new gov.QueryClientImpl(this.rpcClient);   
       const queryGovResult = await queryGov.Proposals({ proposalStatus: 0, voter: "", depositor: "" })
+      
+      for (let i = 0; i < queryGovResult.proposals.length; i++) {        
+        if(queryGovResult.proposals[i].status === 2) {
+          const getTailly = await queryGov.TallyResult({ proposalId: queryGovResult.proposals[i].id })
+          queryGovResult.proposals[i].finalTallyResult = getTailly.tally
+        }
+      }
       this.allProposals = queryGovResult.proposals.reverse()
     }, 
     async getFeeGrantModule() {
