@@ -65,10 +65,11 @@
           class="me-2"
           :color="cosmosConfig[store.chain].color"
           height="40"
-          variant="flat"  
+          variant="flat" 
+          to="/proposals" 
         >  
           Proposals
-          <v-menu activator="parent">
+          <!-- <v-menu activator="parent">
             <v-list>
               <v-list-item to="/proposals">
                 <v-list-item-title>All Proposals</v-list-item-title>
@@ -85,7 +86,7 @@
                 </v-list-item-title>
               </v-list-item>
             </v-list>
-          </v-menu> 
+          </v-menu>  -->
         </v-btn>
 
         <v-btn
