@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@chain-registry/osmosis": "^1.21.0",
-    "@cosmjs/stargate": "^0.31.3",
-    "@cosmjs/tendermint-rpc": "^0.31.3",
+    "@cosmjs/stargate": "^0.32.4",
+    "@cosmjs/tendermint-rpc": "^0.32.4",
     "@cosmology/core": "^2.0.1",
     "@mdi/font": "^7.3.67",
     "bech32": "^2.0.0",
